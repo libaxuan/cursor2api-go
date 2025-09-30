@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor2API - 强大的AI模型API代理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+        }
+
+        .nav-tab:hover { background: #e9ecef; color: #495057; }
+        .nav-tab.active { background: #007bff; color: white; }
+
+        .tab-content { display: none; padding: 40px; }
+        .tab-content.active { display: block; }
+
+        .status-card {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .api-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #007bff;
+        }
+
+        .info-card h3 { color: #007bff; margin-bottom: 15px; }
+
+        .info-card .value {
+            font-family: Monaco, monospace;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .model-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .model-card:hover {
+            border-color: #007bff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,123,255,0.2);
+        }
+
+        .model-card.selected {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+
+        .model-card .model-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 8px;
+        }
+
+        .model-card .provider {
+            font-size: 0.9rem;
+            color: #6c757d;
+            opacity: 0.8;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover { background: #0056b3; }
+
+        .code-block code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: block;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .endpoint-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .method-get { background: #28a745; color: white; }
+        .method-post { background: #007bff; color: white; }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            background: rgba(255,255,255,0.9);
+            margin-top: 40px;
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .models-grid { grid-template-columns: 1fr; }
+            .api-info { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Cursor2API Go版本</h1>
+            <p class="subtitle">强大的AI模型API代理服务 - OpenAI兼容接口</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 导航标签 -->
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('overview')">概览</button>
+                <button class="nav-tab" onclick="showTab('models')">模型列表</button>
+                <button class="nav-tab" onclick="showTab('api')">API文档</button>
+            </div>
+
+            <!-- 概览页面 -->
+            <div id="overview" class="tab-content active">
+                <div class="status-card">
+                    <h2>✅ 服务运行正常</h2>
+                    <p>Cursor2API Go版本已成功启动并运行中</p>
+                </div>
+
+                <div class="api-info">
+                    <div class="info-card">
+                        <h3>📍 服务地址</h3>
+                        <div class="value">http://localhost:8002</div>
+                    </div>
+                    <div class="info-card">
+                        <h3>🔑 API密钥</h3>
+                        <div class="value">0000 (默认)</div>
+                    </div>
+                    <div class="info-card">
+                        <h3>🎯 兼容性</h3>
+                        <div class="value">OpenAI API 标准</div>
+                    </div>
+                    <div class="info-card">
+                        <h3>🌊 流式支持</h3>
+                        <div class="value">支持 SSE 流式响应</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🚀 快速开始</h3>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code># 获取模型列表
+curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models
+
+# 发送聊天请求
+curl -X POST http://localhost:8002/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer 0000" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模型页面 -->
+            <div id="models" class="tab-content">
+                <h2>🤖 支持的AI模型 (24个)</h2>
+                <p>点击模型卡片可查看详细信息和使用示例</p>
+
+                <div class="models-grid" id="modelsGrid">
+                    <div class="model-card" onclick="selectModel('gpt-5')">
+                        <div class="model-name">gpt-5</div>
+                        <div class="provider">OpenAI GPT-5</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gpt-5-codex')">
+                        <div class="model-name">gpt-5-codex</div>
+                        <div class="provider">OpenAI Codex</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gpt-5-mini')">
+                        <div class="model-name">gpt-5-mini</div>
+                        <div class="provider">OpenAI GPT-5 Mini</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gpt-5-nano')">
+                        <div class="model-name">gpt-5-nano</div>
+                        <div class="provider">OpenAI GPT-5 Nano</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gpt-4.1')">
+                        <div class="model-name">gpt-4.1</div>
+                        <div class="provider">OpenAI GPT-4.1</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gpt-4o')">
+                        <div class="model-name">gpt-4o</div>
+                        <div class="provider">OpenAI GPT-4o</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-3.5-sonnet')">
+                        <div class="model-name">claude-3.5-sonnet</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-3.5-haiku')">
+                        <div class="model-name">claude-3.5-haiku</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-3.7-sonnet')">
+                        <div class="model-name">claude-3.7-sonnet</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-4-sonnet')">
+                        <div class="model-name">claude-4-sonnet</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-4.5-sonnet')">
+                        <div class="model-name">claude-4.5-sonnet</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-4-opus')">
+                        <div class="model-name">claude-4-opus</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('claude-4.1-opus')">
+                        <div class="model-name">claude-4.1-opus</div>
+                        <div class="provider">Anthropic Claude</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gemini-2.5-pro')">
+                        <div class="model-name">gemini-2.5-pro</div>
+                        <div class="provider">Google Gemini</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gemini-2.5-flash')">
+                        <div class="model-name">gemini-2.5-flash</div>
+                        <div class="provider">Google Gemini</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('o3')">
+                        <div class="model-name">o3</div>
+                        <div class="provider">OpenAI O-Series</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('o4-mini')">
+                        <div class="model-name">o4-mini</div>
+                        <div class="provider">OpenAI O-Series</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('deepseek-r1')">
+                        <div class="model-name">deepseek-r1</div>
+                        <div class="provider">DeepSeek</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('deepseek-v3.1')">
+                        <div class="model-name">deepseek-v3.1</div>
+                        <div class="provider">DeepSeek</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('kimi-k2-instruct')">
+                        <div class="model-name">kimi-k2-instruct</div>
+                        <div class="provider">Moonshot AI</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('grok-3')">
+                        <div class="model-name">grok-3</div>
+                        <div class="provider">xAI Grok</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('grok-3-mini')">
+                        <div class="model-name">grok-3-mini</div>
+                        <div class="provider">xAI Grok</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('grok-4')">
+                        <div class="model-name">grok-4</div>
+                        <div class="provider">xAI Grok</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('code-supernova-1-million')">
+                        <div class="model-name">code-supernova-1-million</div>
+                        <div class="provider">Code Supernova</div>
+                    </div>
+                </div>
+
+                <div id="selectedModelInfo" style="display: none; margin-top: 30px;">
+                    <h3>使用选中的模型</h3>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code id="modelExample"></code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API页面 -->
+            <div id="api" class="tab-content">
+                <h2>📡 API端点文档</h2>
+
+                <div class="endpoint-card">
+                    <div class="method-badge method-get">GET</div>
+                    <strong>/v1/models</strong>
+                    <p>获取所有可用的AI模型列表</p>
+                    <div class="code-block" style="margin-top: 15px;">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code>curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="method-badge method-post">POST</div>
+                    <strong>/v1/chat/completions</strong>
+                    <p>创建聊天完成请求，支持流式和非流式响应</p>
+                    <div class="code-block" style="margin-top: 15px;">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code>curl -X POST http://localhost:8002/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer 0000" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "user", "content": "你好"}
+    ],
+    "stream": false
+  }'</code>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="method-badge method-get">GET</div>
+                    <strong>/health</strong>
+                    <p>健康检查端点</p>
+                    <div class="code-block" style="margin-top: 15px;">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code>curl http://localhost:8002/health</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Cursor2API Go版本 | 强大的AI模型API代理服务</p>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        function showTab(tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            const tabBtns = document.getElementsByClassName('nav-tab');
+            for (let i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 选择模型
+        function selectModel(modelId) {
+            const prevSelected = document.querySelector('.model-card.selected');
+            if (prevSelected) {
+                prevSelected.classList.remove('selected');
+            }
+
+            const modelCards = document.querySelectorAll('.model-card');
+            modelCards.forEach(card => {
+                if (card.onclick.toString().includes(modelId)) {
+                    card.classList.add('selected');
+                }
+            });
+
+            const exampleCode = `curl -X POST http://localhost:8002/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer 0000" \\
+  -d '{
+    "model": "${modelId}",
+    "messages": [
+      {
+        "role": "user",
+        "content": "你好，请用中文回答问题"
+      }
+    ],
+    "stream": false
+  }'`;
+
+            document.getElementById('modelExample').textContent = exampleCode;
+            document.getElementById('selectedModelInfo').style.display = 'block';
+        }
+
+        // 复制代码功能
+        function copyCode(btn) {
+            const codeBlock = btn.nextElementSibling;
+            const code = codeBlock.textContent;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = '已复制!';
+                btn.style.background = '#28a745';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#007bff';
+                }, 2000);
+            }).catch(() => {
+                alert('复制失败，请手动复制代码');
+            });
+        }
+    </script>
+</body>
+</html>

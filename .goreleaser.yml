@@ -1,0 +1,58 @@
+# Build customization
+builds:
+  - main: ./main.go
+    binary: cursor2api-go
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+
+# Archive customization
+archives:
+  - name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+
+# Checksum customization
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+# Changelog customization
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+# Release customization
+release:
+  name_template: "{{.ProjectName}}-v{{.Version}}"
+  github:
+    owner: "{{ .Env.GITHUB_REPOSITORY_OWNER }}"
+    name: "{{ .Env.GITHUB_REPOSITORY_NAME }}"
+
+# GitHub Actions integration
+github_urls:
+  api: https://api.github.com/
+  upload: https://uploads.github.com/
+  download: https://github.com/
