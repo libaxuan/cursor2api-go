@@ -93,10 +93,12 @@ type Usage struct {
 
 // Model 模型信息
 type Model struct {
-	ID      string `json:"id"`
-	Object  string `json:"object"`
-	Created int64  `json:"created"`
-	OwnedBy string `json:"owned_by"`
+	ID            string `json:"id"`
+	Object        string `json:"object"`
+	Created       int64  `json:"created"`
+	OwnedBy       string `json:"owned_by"`
+	MaxTokens     int    `json:"max_tokens,omitempty"`
+	ContextWindow int    `json:"context_window,omitempty"`
 }
 
 // ModelsResponse 模型列表响应

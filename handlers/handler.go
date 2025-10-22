@@ -36,12 +36,23 @@ func (h *Handler) ListModels(c *gin.Context) {
 	modelList := make([]models.Model, 0, len(modelNames))
 
 	for _, modelID := range modelNames {
-		modelList = append(modelList, models.Model{
+		// 获取模型配置信息
+		modelConfig, exists := models.GetModelConfig(modelID)
+		
+		model := models.Model{
 			ID:      modelID,
 			Object:  "model",
 			Created: time.Now().Unix(),
 			OwnedBy: "cursor2api",
-		})
+		}
+		
+		// 如果找到模型配置，添加max_tokens和context_window信息
+		if exists {
+			model.MaxTokens = modelConfig.MaxTokens
+			model.ContextWindow = modelConfig.ContextWindow
+		}
+		
+		modelList = append(modelList, model)
 	}
 
 	response := models.ModelsResponse{
@@ -84,6 +95,9 @@ func (h *Handler) ChatCompletions(c *gin.Context) {
 		))
 		return
 	}
+
+	// 验证并调整max_tokens参数
+	request.MaxTokens = models.ValidateMaxTokens(request.Model, request.MaxTokens)
 
 	// 调用Cursor服务
 	chatGenerator, err := h.cursorService.ChatCompletion(c.Request.Context(), &request)
