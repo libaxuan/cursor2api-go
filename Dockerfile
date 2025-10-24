@@ -1,53 +1,58 @@
-# 构建阶段
-FROM golang:1.22-alpine AS builder
+# --- Build Stage ---
+FROM golang:1.24-alpine AS builder
 
-# 设置工作目录
+# Set the working directory inside the container
 WORKDIR /app
 
-# 安装必要的包
+# Install necessary packages
 RUN apk add --no-cache git ca-certificates
 
-# 复制go mod文件
+# Copy the Go module files
 COPY go.mod go.sum ./
 
-# 下载依赖
+# Download Go module dependencies
 RUN go mod download
 
-# 复制源码
+# Copy the entire source code into the container
 COPY . .
 
-# 构建应用
+# Build the application, creating a statically linked binary
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o cursor2api-go .
 
-# 运行阶段
+
+# --- Final/Runtime Stage ---
 FROM alpine:latest
 
-# 安装ca-certificates
-RUN apk --no-cache add ca-certificates
+# MODIFIED: Install ca-certificates AND nodejs + npm
+RUN apk --no-cache add ca-certificates nodejs npm
 
-# 创建非root用户
+# Create a non-root user for security best practices
 RUN adduser -D -g '' appuser
 
+# Set the working directory for the final image
 WORKDIR /root/
 
-# 从构建阶段复制二进制文件
+# Copy the compiled binary from the builder stage
 COPY --from=builder /app/cursor2api-go .
 
-# 复制静态文件
+# Copy the static files (for the web documentation) from the builder stage
 COPY --from=builder /app/static ./static
 
-# 更改所有者
+# Copy the jscode directory from the builder stage
+COPY --from=builder /app/jscode ./jscode
+
+# Change the ownership of all files to the non-root user
 RUN chown -R appuser:appuser /root/
 
-# 切换到非root用户
+# Switch to the non-root user
 USER appuser
 
-# 暴露端口
+# Expose the port that the application will listen on
 EXPOSE 8002
 
-# 健康检查
+# Healthcheck lets Docker know if the application is running correctly
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8002/health || exit 1
 
-# 启动应用
+# Command to run the application when the container starts
 CMD ["./cursor2api-go"]
