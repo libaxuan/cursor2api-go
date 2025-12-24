@@ -26,8 +26,8 @@ const cursorAPIURL = "https://cursor.com/api/chat"
 
 // CursorService handles interactions with Cursor API.
 type CursorService struct {
-	config *config.Config
-	client *req.Client
+	config          *config.Config
+	client          *req.Client
 	mainJS          string
 	envJS           string
 	scriptCache     string
@@ -90,9 +90,18 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 		return nil, err
 	}
 
+	// 添加详细的调试日志
+	headers := s.chatHeaders(xIsHuman)
+	logrus.WithFields(logrus.Fields{
+		"url":            cursorAPIURL,
+		"x-is-human":     xIsHuman[:50] + "...", // 只显示前50个字符
+		"payload_length": len(jsonPayload),
+		"model":          request.Model,
+	}).Debug("Sending request to Cursor API")
+
 	resp, err := s.client.R().
 		SetContext(ctx).
-		SetHeaders(s.chatHeaders(xIsHuman)).
+		SetHeaders(headers).
 		SetBody(jsonPayload).
 		DisableAutoReadResponse().
 		Post(cursorAPIURL)
@@ -104,6 +113,13 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 		body, _ := io.ReadAll(resp.Response.Body)
 		resp.Response.Body.Close()
 		message := strings.TrimSpace(string(body))
+
+		// 记录详细的错误信息
+		logrus.WithFields(logrus.Fields{
+			"status_code": resp.StatusCode,
+			"response":    message,
+			"headers":     resp.Header,
+		}).Error("Cursor API returned non-OK status")
 		if strings.Contains(message, "Attention Required! | Cloudflare") {
 			message = "Cloudflare 403"
 		}
@@ -147,7 +163,7 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 			SetContext(ctx).
 			SetHeaders(s.scriptHeaders()).
 			Get(s.config.ScriptURL)
-		
+
 		if err != nil {
 			// 如果请求失败且有缓存，使用缓存
 			if cached != "" {
@@ -251,24 +267,15 @@ func (s *CursorService) truncateMessages(messages []models.Message) []models.Mes
 
 func (s *CursorService) chatHeaders(xIsHuman string) map[string]string {
 	return map[string]string{
-		"User-Agent":                 s.config.FP.UserAgent,
-		"Content-Type":               "application/json",
-		"sec-ch-ua-platform":         `"Windows"`,
-		"x-path":                     "/api/chat",
-		"sec-ch-ua":                  `"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"`,
-		"x-method":                   "POST",
-		"sec-ch-ua-bitness":          `"64"`,
-		"sec-ch-ua-mobile":           "?0",
-		"sec-ch-ua-arch":             `"x86"`,
-		"x-is-human":                 xIsHuman,
-		"sec-ch-ua-platform-version": `"19.0.0"`,
-		"origin":                     "https://cursor.com",
-		"sec-fetch-site":             "same-origin",
-		"sec-fetch-mode":             "cors",
-		"sec-fetch-dest":             "empty",
-		"referer":                    "https://cursor.com/en-US/learn/how-ai-models-work",
-		"accept-language":            "zh-CN,zh;q=0.9,en;q=0.8",
-		"priority":                   "u=1, i",
+		"sec-ch-ua-platform": `"macOS"`,
+		"x-path":             "/api/chat",
+		"Referer":            "https://cursor.com/en-US/learn/how-ai-models-work",
+		"sec-ch-ua":          `"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"`,
+		"x-method":           "POST",
+		"sec-ch-ua-mobile":   "?0",
+		"x-is-human":         xIsHuman,
+		"User-Agent":         s.config.FP.UserAgent,
+		"content-type":       "application/json",
 	}
 }
 
@@ -284,7 +291,7 @@ func (s *CursorService) scriptHeaders() map[string]string {
 		"sec-fetch-site":             "same-origin",
 		"sec-fetch-mode":             "no-cors",
 		"sec-fetch-dest":             "script",
-		"referer":                    "https://cursor.com/en-US/learn/how-ai-models-work",
+		"referer":                    "https://cursor.com/cn/learn/how-ai-models-work",
 		"accept-language":            "zh-CN,zh;q=0.9,en;q=0.8",
 	}
 }
