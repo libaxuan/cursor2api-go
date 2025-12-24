@@ -333,7 +333,7 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
 
             <!-- 模型页面 -->
             <div id="models" class="tab-content">
-                <h2>🤖 支持的AI模型 (24个)</h2>
+                <h2>🤖 支持的AI模型 (23个)</h2>
                 <p>点击模型卡片可查看详细信息和使用示例</p>
 
                 <div class="models-grid" id="modelsGrid">
@@ -401,6 +401,10 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
                         <div class="model-name">gemini-2.5-flash</div>
                         <div class="provider">Google Gemini</div>
                     </div>
+                    <div class="model-card" onclick="selectModel('gemini-3.0-pro')">
+                        <div class="model-name">gemini-3.0-pro</div>
+                        <div class="provider">Google Gemini</div>
+                    </div>
                     <div class="model-card" onclick="selectModel('o3')">
                         <div class="model-name">o3</div>
                         <div class="provider">OpenAI O-Series</div>
@@ -424,18 +428,6 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
                     <div class="model-card" onclick="selectModel('grok-3')">
                         <div class="model-name">grok-3</div>
                         <div class="provider">xAI Grok</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('grok-3-mini')">
-                        <div class="model-name">grok-3-mini</div>
-                        <div class="provider">xAI Grok</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('grok-4')">
-                        <div class="model-name">grok-4</div>
-                        <div class="provider">xAI Grok</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('code-supernova-1-million')">
-                        <div class="model-name">code-supernova-1-million</div>
-                        <div class="provider">Code Supernova</div>
                     </div>
                 </div>
 

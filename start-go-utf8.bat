@@ -47,7 +47,7 @@ if not exist .env (
         echo.
         echo # API配置
         echo API_KEY=0000
-        echo MODELS=gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3,grok-3-mini,grok-4,code-supernova-1-million
+        echo MODELS=gpt-5.1,gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,gemini-3.0-pro,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3
         echo SYSTEM_PROMPT_INJECT=
         echo.
         echo # 请求配置
@@ -115,14 +115,14 @@ echo   POST   /v1/chat/completions - 聊天完成
 echo   GET    /health - 健康检查
 echo.
 
-echo 🤖 支持的模型 ^(24个^):
-echo   - gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano
+echo 🤖 支持的模型 ^(23个^):
+echo   - gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano
 echo   - gpt-4.1, gpt-4o, o3, o4-mini
 echo   - claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet
 echo   - claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-echo   - gemini-2.5-pro, gemini-2.5-flash
+echo   - gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro
 echo   - deepseek-r1, deepseek-v3.1, kimi-k2-instruct
-echo   - grok-3, grok-3-mini, grok-4, code-supernova-1-million
+echo   - grok-3
 echo.
 
 echo 🟢 正在启动服务器...

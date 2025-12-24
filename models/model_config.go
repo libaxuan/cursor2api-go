@@ -114,6 +114,12 @@ func GetModelConfigs() map[string]ModelConfig {
 			MaxTokens:     8192,
 			ContextWindow: 1000000,
 		},
+		"gemini-3.0-pro": {
+			ID:            "gemini-3.0-pro",
+			Provider:      "Google Gemini",
+			MaxTokens:     8192,
+			ContextWindow: 2000000,
+		},
 
 		// OpenAI O-Series (Reasoning Models need high output limits)
 		"o3": {
@@ -155,26 +161,6 @@ func GetModelConfigs() map[string]ModelConfig {
 		"grok-3": {
 			ID:            "grok-3",
 			Provider:      "xAI Grok",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-		"grok-3-mini": {
-			ID:            "grok-3-mini",
-			Provider:      "xAI Grok",
-			MaxTokens:     4096,
-			ContextWindow: 131072,
-		},
-		"grok-4": {
-			ID:            "grok-4",
-			Provider:      "xAI Grok",
-			MaxTokens:     4096,
-			ContextWindow: 256000,
-		},
-
-		// Code Supernova
-		"code-supernova-1-million": {
-			ID:            "code-supernova-1-million",
-			Provider:      "Code Supernova",
 			MaxTokens:     8192,
 			ContextWindow: 1000000,
 		},
