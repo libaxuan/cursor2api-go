@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/imroc/req/v3"
@@ -27,8 +28,11 @@ const cursorAPIURL = "https://cursor.com/api/chat"
 type CursorService struct {
 	config *config.Config
 	client *req.Client
-	mainJS string
-	envJS  string
+	mainJS          string
+	envJS           string
+	scriptCache     string
+	scriptCacheTime time.Time
+	scriptMutex     sync.RWMutex
 }
 
 // NewCursorService creates a new service instance.
@@ -128,21 +132,50 @@ func (s *CursorService) consumeSSE(ctx context.Context, resp *http.Response, out
 }
 
 func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
-	resp, err := s.client.R().
-		SetContext(ctx).
-		SetHeaders(s.scriptHeaders()).
-		Get(s.config.ScriptURL)
-	if err != nil {
-		return "", fmt.Errorf("failed to fetch script: %w", err)
+	// 检查缓存
+	s.scriptMutex.RLock()
+	cached := s.scriptCache
+	lastFetch := s.scriptCacheTime
+	s.scriptMutex.RUnlock()
+
+	var scriptBody string
+	// 缓存有效期30分钟
+	if cached != "" && time.Since(lastFetch) < 30*time.Minute {
+		scriptBody = cached
+	} else {
+		resp, err := s.client.R().
+			SetContext(ctx).
+			SetHeaders(s.scriptHeaders()).
+			Get(s.config.ScriptURL)
+		
+		if err != nil {
+			// 如果请求失败且有缓存，使用缓存
+			if cached != "" {
+				logrus.Warnf("Failed to fetch script, using cached version: %v", err)
+				scriptBody = cached
+			} else {
+				return "", fmt.Errorf("failed to fetch script: %w", err)
+			}
+		} else if resp.StatusCode != http.StatusOK {
+			// 如果状态码异常且有缓存，使用缓存
+			if cached != "" {
+				logrus.Warnf("Script fetch returned status %d, using cached version", resp.StatusCode)
+				scriptBody = cached
+			} else {
+				message := strings.TrimSpace(resp.String())
+				return "", middleware.NewCursorWebError(resp.StatusCode, message)
+			}
+		} else {
+			scriptBody = string(resp.Bytes())
+			// 更新缓存
+			s.scriptMutex.Lock()
+			s.scriptCache = scriptBody
+			s.scriptCacheTime = time.Now()
+			s.scriptMutex.Unlock()
+		}
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		message := strings.TrimSpace(resp.String())
-		return "", middleware.NewCursorWebError(resp.StatusCode, message)
-	}
-
-	scriptBody := resp.Bytes()
-	compiled := s.prepareJS(string(scriptBody))
+	compiled := s.prepareJS(scriptBody)
 	value, err := utils.RunJS(compiled)
 	if err != nil {
 		return "", fmt.Errorf("failed to execute JS: %w", err)

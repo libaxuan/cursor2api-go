@@ -11,9 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -79,7 +77,8 @@ func WriteSSEEvent(w http.ResponseWriter, event, data string) error {
 }
 
 // StreamChatCompletion 处理流式聊天完成
-func StreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}) {
+// StreamChatCompletion 处理流式聊天完成
+func StreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}, modelName string) {
 	// 设置SSE头
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")
@@ -100,7 +99,7 @@ func StreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}) {
 		case data, ok := <-chatGenerator:
 			if !ok {
 				// 通道关闭，发送完成事件
-				finishEvent := models.NewChatCompletionStreamResponse(responseID, "gpt-4o", "", stringPtr("stop"))
+				finishEvent := models.NewChatCompletionStreamResponse(responseID, modelName, "", stringPtr("stop"))
 				if jsonData, err := json.Marshal(finishEvent); err == nil {
 					WriteSSEEvent(c.Writer, "", string(jsonData))
 				}
@@ -112,7 +111,7 @@ func StreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}) {
 			case string:
 				// 文本内容
 				if v != "" {
-					streamResp := models.NewChatCompletionStreamResponse(responseID, "gpt-4o", v, nil)
+					streamResp := models.NewChatCompletionStreamResponse(responseID, modelName, v, nil)
 					if jsonData, err := json.Marshal(streamResp); err == nil {
 						WriteSSEEvent(c.Writer, "", string(jsonData))
 					}
@@ -135,7 +134,7 @@ func StreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}) {
 }
 
 // NonStreamChatCompletion 处理非流式聊天完成
-func NonStreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}) {
+func NonStreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}, modelName string) {
 	var fullContent strings.Builder
 	var usage models.Usage
 
@@ -157,7 +156,7 @@ func NonStreamChatCompletion(c *gin.Context, chatGenerator <-chan interface{}) {
 				responseID := GenerateChatCompletionID()
 				response := models.NewChatCompletionResponse(
 					responseID,
-					"gpt-4o",
+					modelName,
 					fullContent.String(),
 					usage,
 				)
@@ -196,7 +195,7 @@ func ErrorWrapper(handler func(*gin.Context) error) gin.HandlerFunc {
 }
 
 // SafeStreamWrapper 安全流式包装器
-func SafeStreamWrapper(handler func(*gin.Context, <-chan interface{}), c *gin.Context, chatGenerator <-chan interface{}) {
+func SafeStreamWrapper(handler func(*gin.Context, <-chan interface{}, string), c *gin.Context, chatGenerator <-chan interface{}, modelName string) {
 	defer func() {
 		if r := recover(); r != nil {
 			logrus.WithField("panic", r).Error("Panic in stream handler")
@@ -244,7 +243,7 @@ func SafeStreamWrapper(handler func(*gin.Context, <-chan interface{}), c *gin.Co
 		}
 	}()
 
-	handler(c, buffered)
+	handler(c, buffered, modelName)
 }
 
 // CreateHTTPClient 创建HTTP客户端
@@ -377,22 +376,9 @@ func ReadRequestBody(r *http.Request) ([]byte, error) {
 
 // RunJS 执行JavaScript代码并返回标准输出内容
 func RunJS(jsCode string) (string, error) {
-	// 创建临时目录
-	tempDir, err := os.MkdirTemp("", "cursor_js_*")
-	if err != nil {
-		return "", fmt.Errorf("failed to create temp dir: %w", err)
-	}
-	defer os.RemoveAll(tempDir)
-
-	// 创建JavaScript文件
-	jsFilePath := filepath.Join(tempDir, "script.js")
-	file, err := os.Create(jsFilePath)
-	if err != nil {
-		return "", fmt.Errorf("failed to create js file: %w", err)
-	}
-
 	// 添加crypto模块导入并设置为全局变量
-	jsContent := `const crypto = require('crypto').webcrypto;
+	// 注意：使用stdin时，我们需要确保代码是自包含的
+	finalJS := `const crypto = require('crypto').webcrypto;
 global.crypto = crypto;
 globalThis.crypto = crypto;
 // 在Node.js环境中创建window对象
@@ -401,14 +387,12 @@ window.crypto = crypto;
 this.crypto = crypto;
 ` + jsCode
 
-	if _, err := file.WriteString(jsContent); err != nil {
-		file.Close()
-		return "", fmt.Errorf("failed to write js content: %w", err)
-	}
-	file.Close()
+	// 执行Node.js命令，使用stdin输入代码
+	cmd := exec.Command("node")
 
-	// 执行Node.js命令
-	cmd := exec.Command("node", jsFilePath)
+	// 设置输入
+	cmd.Stdin = strings.NewReader(finalJS)
+
 	output, err := cmd.Output()
 	if err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Cursor2API Go版本启动脚本
+#  Cursor2API启动脚本
 
 set -e
 
@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 print_header() {
     echo ""
     echo -e "${CYAN}=========================================${NC}"
-    echo -e "${WHITE}    🚀 Cursor2API Go版本启动器${NC}"
+    echo -e "${WHITE}    🚀  Cursor2API启动器${NC}"
     echo -e "${CYAN}=========================================${NC}"
 }
 

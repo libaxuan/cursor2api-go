@@ -1,4 +1,4 @@
-# Cursor2API Go版本
+#  Cursor2API
 
 一个将Cursor Web转换为OpenAI兼容API的Go服务。完全兼容OpenAI API格式，支持本地运行。
 
@@ -103,14 +103,15 @@ curl -X GET "http://localhost:8002/v1/models" \
 -H "Authorization: Bearer 0000"
 ```
 
-#### 非流式聊天
+
+### 非流式聊天 (Non-Streaming)
 
 ```bash
 curl -X POST "http://localhost:8002/v1/chat/completions" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer 0000" \
 -d '{
-  "model": "gpt-4o",
+  "model": "claude-4.5-sonnet",
   "messages": [
     {
       "role": "user",
@@ -121,14 +122,14 @@ curl -X POST "http://localhost:8002/v1/chat/completions" \
 }'
 ```
 
-#### 流式聊天
+### 流式聊天 (Streaming)
 
 ```bash
 curl -X POST "http://localhost:8002/v1/chat/completions" \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer 0000" \
 -d '{
-  "model": "gpt-4o",
+  "model": "claude-4.5-sonnet",
   "messages": [
     {
       "role": "user",

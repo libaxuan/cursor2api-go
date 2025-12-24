@@ -2,11 +2,11 @@
 chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
 
-:: Cursor2API Go版本启动脚本
+::  Cursor2API启动脚本
 
 echo.
 echo =========================================
-echo     🚀 Cursor2API Go版本启动器
+echo     🚀  Cursor2API启动器
 echo =========================================
 echo.
 

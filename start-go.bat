@@ -2,120 +2,120 @@
 chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
 
-:: Cursor2API Go°æ±¾Æô¶¯½Å±¾
+:: Cursor2API Goï¿½æ±¾ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½
 
 echo.
 echo =========================================
-echo     Cursor2API Go°æ±¾Æô¶¯Æ÷
+echo     Cursor2API Goï¿½æ±¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 echo =========================================
 echo.
 
-:: ¼ì²éGoÊÇ·ñ°²×°
+:: ï¿½ï¿½ï¿½Goï¿½Ç·ï¿½×°
 go version >nul 2>&1
 if errorlevel 1 (
-    echo [´íÎó] Go Î´°²×°£¬ÇëÏÈ°²×° Go 1.21 »ò¸ü¸ß°æ±¾
-    echo [ÌáÊ¾] °²×°·½·¨: https://golang.org/dl/
+    echo [ï¿½ï¿½ï¿½ï¿½] Go Î´ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½È°ï¿½×° Go 1.21 ï¿½ï¿½ï¿½ï¿½ß°æ±¾
+    echo [ï¿½ï¿½Ê¾] ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½: https://golang.org/dl/
     pause
     exit /b 1
 )
 
-:: ÏÔÊ¾Go°æ±¾²¢¼ì²é°æ±¾ºÅ
+:: ï¿½ï¿½Ê¾Goï¿½æ±¾ï¿½ï¿½ï¿½ï¿½ï¿½æ±¾ï¿½ï¿½
 for /f "tokens=3" %%i in ('go version') do set GO_VERSION=%%i
 set GO_VERSION=!GO_VERSION:go=!
-echo [³É¹¦] Go °æ±¾¼ì²éÍ¨¹ý: !GO_VERSION!
+echo [ï¿½É¹ï¿½] Go ï¿½æ±¾ï¿½ï¿½ï¿½Í¨ï¿½ï¿½: !GO_VERSION!
 
-:: ¼ì²éNode.jsÊÇ·ñ°²×°
+:: ï¿½ï¿½ï¿½Node.jsï¿½Ç·ï¿½×°
 node --version >nul 2>&1
 if errorlevel 1 (
-    echo [´íÎó] Node.js Î´°²×°£¬ÇëÏÈ°²×° Node.js 18 »ò¸ü¸ß°æ±¾
-    echo [ÌáÊ¾] °²×°·½·¨: https://nodejs.org/
+    echo [ï¿½ï¿½ï¿½ï¿½] Node.js Î´ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½È°ï¿½×° Node.js 18 ï¿½ï¿½ï¿½ï¿½ß°æ±¾
+    echo [ï¿½ï¿½Ê¾] ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½: https://nodejs.org/
     pause
     exit /b 1
 )
 
-:: ÏÔÊ¾Node.js°æ±¾
+:: ï¿½ï¿½Ê¾Node.jsï¿½æ±¾
 for /f "delims=" %%i in ('node --version') do set NODE_VERSION=%%i
-echo [³É¹¦] Node.js °æ±¾¼ì²éÍ¨¹ý: !NODE_VERSION!
+echo [ï¿½É¹ï¿½] Node.js ï¿½æ±¾ï¿½ï¿½ï¿½Í¨ï¿½ï¿½: !NODE_VERSION!
 
-:: ´´½¨.envÎÄ¼þ£¨Èç¹û²»´æÔÚ£©
+:: ï¿½ï¿½ï¿½ï¿½.envï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú£ï¿½
 if not exist .env (
-    echo [ÐÅÏ¢] ´´½¨Ä¬ÈÏ .env ÅäÖÃÎÄ¼þ...
+    echo [ï¿½ï¿½Ï¢] ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½ .env ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½...
     (
-        echo # ·þÎñÆ÷ÅäÖÃ
+        echo # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         echo PORT=8002
         echo DEBUG=true
         echo.
-        echo # APIÅäÖÃ
+        echo # APIï¿½ï¿½ï¿½ï¿½
         echo API_KEY=0000
         echo MODELS=gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3,grok-3-mini,grok-4,code-supernova-1-million
         echo SYSTEM_PROMPT_INJECT=
         echo.
-        echo # ÇëÇóÅäÖÃ
+        echo # ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         echo TIMEOUT=30
         echo USER_AGENT=Mozilla/5.0 ^(Windows NT 10.0; Win64; x64^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/140.0.0.0 Safari/537.36
         echo.
-        echo # CursorÅäÖÃ
+        echo # Cursorï¿½ï¿½ï¿½ï¿½
         echo SCRIPT_URL=https://cursor.com/149e9513-01fa-4fb0-aad4-566afd725d1b/2d206a39-8ed7-437e-a3be-862e0f06eea3/a-4-a/c.js?i=0^^^&v=3^^^&h=cursor.com
     ) > .env
-    echo [³É¹¦] Ä¬ÈÏ .env ÎÄ¼þÒÑ´´½¨
+    echo [ï¿½É¹ï¿½] Ä¬ï¿½ï¿½ .env ï¿½Ä¼ï¿½ï¿½Ñ´ï¿½ï¿½ï¿½
 ) else (
-    echo [³É¹¦] ÅäÖÃÎÄ¼þ .env ÒÑ´æÔÚ
+    echo [ï¿½É¹ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ .env ï¿½Ñ´ï¿½ï¿½ï¿½
 )
 
-:: ÏÂÔØÒÀÀµ
+:: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 echo.
-echo [ÐÅÏ¢] ÕýÔÚÏÂÔØ Go ÒÀÀµ...
+echo [ï¿½ï¿½Ï¢] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Go ï¿½ï¿½ï¿½ï¿½...
 go mod download
 if errorlevel 1 (
-    echo [´íÎó] ÒÀÀµÏÂÔØÊ§°Ü£¡
+    echo [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½
     pause
     exit /b 1
 )
 
-:: ¹¹½¨Ó¦ÓÃ
-echo [ÐÅÏ¢] ÕýÔÚ±àÒë Go Ó¦ÓÃ...
+:: ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½
+echo [ï¿½ï¿½Ï¢] ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ Go Ó¦ï¿½ï¿½...
 go build -o cursor2api-go.exe .
 if errorlevel 1 (
-    echo [´íÎó] ±àÒëÊ§°Ü£¡
+    echo [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½
     pause
     exit /b 1
 )
 
-:: ¼ì²é¹¹½¨ÊÇ·ñ³É¹¦
+:: ï¿½ï¿½é¹¹ï¿½ï¿½ï¿½Ç·ï¿½É¹ï¿½
 if not exist cursor2api-go.exe (
-    echo [´íÎó] ±àÒëÊ§°Ü - ¿ÉÖ´ÐÐÎÄ¼þÎ´ÕÒµ½£¡
+    echo [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ - ï¿½ï¿½Ö´ï¿½ï¿½ï¿½Ä¼ï¿½Î´ï¿½Òµï¿½ï¿½ï¿½
     pause
     exit /b 1
 )
 
-echo [³É¹¦] Ó¦ÓÃ±àÒë³É¹¦£¡
+echo [ï¿½É¹ï¿½] Ó¦ï¿½Ã±ï¿½ï¿½ï¿½É¹ï¿½ï¿½ï¿½
 
-:: »ñÈ¡¶Ë¿ÚÅäÖÃ
+:: ï¿½ï¿½È¡ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½
 set PORT=8002
 for /f "tokens=2 delims==" %%i in ('findstr /r "^PORT" .env 2^>nul') do set PORT=%%i
 set PORT=!PORT: =!
 
-:: »ñÈ¡APIÃÜÔ¿
+:: ï¿½ï¿½È¡APIï¿½ï¿½Ô¿
 set API_KEY=0000
 for /f "tokens=2 delims==" %%i in ('findstr /r "^API_KEY" .env 2^>nul') do set API_KEY=%%i
 set API_KEY=!API_KEY: =!
 
-:: ÏÔÊ¾·þÎñÐÅÏ¢
+:: ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 echo.
-echo [Æô¶¯] ·þÎñÆô¶¯ÐÅÏ¢:
-echo   ·þÎñÆ÷µØÖ·: http://127.0.0.1:!PORT!
-echo   ÔÚÏßÎÄµµ: http://127.0.0.1:!PORT!
-echo   APIÃÜÔ¿: !API_KEY!
-echo.
-
-echo [½Ó¿Ú] Ö§³ÖµÄ½Ó¿Ú:
-echo   GET    / - APIÎÄµµÒ³Ãæ
-echo   GET    /v1/models - »ñÈ¡Ä£ÐÍÁÐ±í
-echo   POST   /v1/chat/completions - ÁÄÌìÍê³É
-echo   GET    /health - ½¡¿µ¼ì²é
+echo [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢:
+echo   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·: http://127.0.0.1:!PORT!
+echo   ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½: http://127.0.0.1:!PORT!
+echo   APIï¿½ï¿½Ô¿: !API_KEY!
 echo.
 
-echo [Ä£ÐÍ] Ö§³ÖµÄÄ£ÐÍ ^(24¸ö^):
+echo [ï¿½Ó¿ï¿½] Ö§ï¿½ÖµÄ½Ó¿ï¿½:
+echo   GET    / - APIï¿½Äµï¿½Ò³ï¿½ï¿½
+echo   GET    /v1/models - ï¿½ï¿½È¡Ä£ï¿½ï¿½ï¿½Ð±ï¿½
+echo   POST   /v1/chat/completions - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+echo   GET    /health - ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+echo.
+
+echo [Ä£ï¿½ï¿½] Ö§ï¿½Öµï¿½Ä£ï¿½ï¿½ ^(24ï¿½ï¿½^):
 echo   - gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano
 echo   - gpt-4.1, gpt-4o, o3, o4-mini
 echo   - claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet
@@ -125,12 +125,12 @@ echo   - deepseek-r1, deepseek-v3.1, kimi-k2-instruct
 echo   - grok-3, grok-3-mini, grok-4, code-supernova-1-million
 echo.
 
-echo [ÔËÐÐ] ÕýÔÚÆô¶¯·þÎñÆ÷...
+echo [ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...
 echo =========================================
-echo °´ Ctrl+C Í£Ö¹·þÎñÆ÷
+echo ï¿½ï¿½ Ctrl+C Í£Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 echo.
 
-:: Æô¶¯·þÎñ
+:: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 cursor2api-go.exe
 
 pause
