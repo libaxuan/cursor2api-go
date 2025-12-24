@@ -15,7 +15,6 @@
 - ✅ 高性能 Go 语言实现
 - ✅ 自动处理 Cursor Web 认证
 - ✅ 简洁的 Web 界面
-- ✅ 完整的单元测试覆盖
 
 ## 🤖 支持的模型 (23个)
 
@@ -35,7 +34,7 @@
 
 **Linux/macOS**:
 ```bash
-git clone https://github.com/libaxuan/cursor2api-go.git
+git clone https://github.com/yourusername/cursor2api-go.git
 cd cursor2api-go
 chmod +x start.sh
 ./start.sh
@@ -101,11 +100,10 @@ curl -X POST http://localhost:8002/v1/chat/completions \
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
 | `PORT` | `8002` | 服务器端口 |
-| `DEBUG` | `false` | 调试模式 |
+| `DEBUG` | `true` | 调试模式 |
 | `API_KEY` | `0000` | API 认证密钥 |
-| `MODELS` | 见 `.env` | 支持的模型列表（逗号分隔） |
+| `MODELS` | 见 `.env.example` | 支持的模型列表（逗号分隔） |
 | `TIMEOUT` | `30` | 请求超时时间（秒） |
-| `MAX_INPUT_LENGTH` | `200000` | 最大输入长度 |
 
 ### Windows 启动脚本说明
 
@@ -116,17 +114,23 @@ curl -X POST http://localhost:8002/v1/chat/completions \
 
 两个脚本功能完全相同，仅显示样式不同。如遇乱码请使用 `start-go.bat`。
 
-## 🧪 测试
+## 🧪 开发
+
+### 运行测试
 
 ```bash
-# 运行所有测试
+# 运行现有测试
 go test ./...
+```
 
-# 运行测试并生成覆盖率报告
-go test -coverprofile=coverage.out ./...
+### 构建项目
 
-# 查看覆盖率详情
-go tool cover -html=coverage.out
+```bash
+# 构建可执行文件
+go build -o cursor2api-go
+
+# 交叉编译 (例如 Linux)
+GOOS=linux GOARCH=amd64 go build -o cursor2api-go-linux
 ```
 
 ## 📁 项目结构

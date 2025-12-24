@@ -15,7 +15,6 @@ A Go service that converts Cursor Web to OpenAI-compatible API. Fully compatible
 - ✅ High-performance Go implementation
 - ✅ Automatic Cursor Web authentication
 - ✅ Clean web interface
-- ✅ Comprehensive unit test coverage
 
 ## 🤖 Supported Models (23)
 
@@ -35,7 +34,7 @@ A Go service that converts Cursor Web to OpenAI-compatible API. Fully compatible
 
 **Linux/macOS**:
 ```bash
-git clone https://github.com/libaxuan/cursor2api-go.git
+git clone https://github.com/yourusername/cursor2api-go.git
 cd cursor2api-go
 chmod +x start.sh
 ./start.sh
@@ -101,11 +100,10 @@ In any app that supports custom OpenAI API (e.g., ChatGPT Next Web, Lobe Chat):
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `8002` | Server port |
-| `DEBUG` | `false` | Debug mode |
+| `DEBUG` | `true` | Debug mode |
 | `API_KEY` | `0000` | API authentication key |
-| `MODELS` | See `.env` | Supported models (comma-separated) |
+| `MODELS` | See `.env.example` | Supported models (comma-separated) |
 | `TIMEOUT` | `30` | Request timeout (seconds) |
-| `MAX_INPUT_LENGTH` | `200000` | Maximum input length |
 
 ### Windows Startup Scripts
 
@@ -116,17 +114,23 @@ Two Windows startup scripts are provided:
 
 Both scripts have identical functionality, only display styles differ. Use `start-go.bat` if you encounter encoding issues.
 
-## 🧪 Testing
+## 🧪 Development
+
+### Running Tests
 
 ```bash
-# Run all tests
+# Run existing tests
 go test ./...
+```
 
-# Run tests with coverage report
-go test -coverprofile=coverage.out ./...
+### Building
 
-# View coverage details
-go tool cover -html=coverage.out
+```bash
+# Build executable
+go build -o cursor2api-go
+
+# Cross-compile (e.g., for Linux)
+GOOS=linux GOARCH=amd64 go build -o cursor2api-go-linux
 ```
 
 ## 📁 Project Structure
