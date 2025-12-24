@@ -36,6 +36,12 @@ func GetModelConfigs() map[string]ModelConfig {
 			MaxTokens:     4096,
 			ContextWindow: 400000,
 		},
+		"gpt-5.1": {
+			ID:            "gpt-5.1",
+			Provider:      "OpenAI",
+			MaxTokens:     8192,
+			ContextWindow: 1000000,
+		},
 
 		// OpenAI GPT-4 系列
 		"gpt-4.1": {

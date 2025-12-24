@@ -71,7 +71,7 @@ DEBUG=true
 
 # API配置
 API_KEY=0000
-MODELS=gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3,grok-3-mini,grok-4,code-supernova-1-million
+MODELS=gpt-5.1,gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3,grok-3-mini,grok-4,code-supernova-1-million
 SYSTEM_PROMPT_INJECT=
 
 # 请求配置
@@ -124,7 +124,7 @@ show_info() {
     echo ""
 
     echo -e "${PURPLE}🤖 支持的模型 (24个):${NC}"
-    echo "  - gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano"
+    echo "  - gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano"
     echo "  - gpt-4.1, gpt-4o, o3, o4-mini"
     echo "  - claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet"
     echo "  - claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus"
