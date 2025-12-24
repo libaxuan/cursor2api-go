@@ -33,6 +33,7 @@ type CursorService struct {
 	scriptCache     string
 	scriptCacheTime time.Time
 	scriptMutex     sync.RWMutex
+	headerGenerator *utils.HeaderGenerator
 }
 
 // NewCursorService creates a new service instance.
@@ -60,10 +61,11 @@ func NewCursorService(cfg *config.Config) *CursorService {
 	}
 
 	return &CursorService{
-		config: cfg,
-		client: client,
-		mainJS: string(mainJS),
-		envJS:  string(envJS),
+		config:          cfg,
+		client:          client,
+		mainJS:          string(mainJS),
+		envJS:           string(envJS),
+		headerGenerator: utils.NewHeaderGenerator(),
 	}
 }
 
@@ -85,50 +87,91 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 		return nil, fmt.Errorf("failed to marshal cursor payload: %w", err)
 	}
 
-	xIsHuman, err := s.fetchXIsHuman(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// 添加详细的调试日志
-	headers := s.chatHeaders(xIsHuman)
-	logrus.WithFields(logrus.Fields{
-		"url":            cursorAPIURL,
-		"x-is-human":     xIsHuman[:50] + "...", // 只显示前50个字符
-		"payload_length": len(jsonPayload),
-		"model":          request.Model,
-	}).Debug("Sending request to Cursor API")
-
-	resp, err := s.client.R().
-		SetContext(ctx).
-		SetHeaders(headers).
-		SetBody(jsonPayload).
-		DisableAutoReadResponse().
-		Post(cursorAPIURL)
-	if err != nil {
-		return nil, fmt.Errorf("cursor request failed: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Response.Body)
-		resp.Response.Body.Close()
-		message := strings.TrimSpace(string(body))
-
-		// 记录详细的错误信息
-		logrus.WithFields(logrus.Fields{
-			"status_code": resp.StatusCode,
-			"response":    message,
-			"headers":     resp.Header,
-		}).Error("Cursor API returned non-OK status")
-		if strings.Contains(message, "Attention Required! | Cloudflare") {
-			message = "Cloudflare 403"
+	// 尝试最多2次
+	maxRetries := 2
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		xIsHuman, err := s.fetchXIsHuman(ctx)
+		if err != nil {
+			if attempt < maxRetries {
+				logrus.WithError(err).Warnf("Failed to fetch x-is-human token (attempt %d/%d), retrying...", attempt, maxRetries)
+				time.Sleep(time.Second * time.Duration(attempt)) // 指数退避
+				continue
+			}
+			return nil, err
 		}
-		return nil, middleware.NewCursorWebError(resp.StatusCode, message)
+
+		// 添加详细的调试日志
+		headers := s.chatHeaders(xIsHuman)
+		logrus.WithFields(logrus.Fields{
+			"url":            cursorAPIURL,
+			"x-is-human":     xIsHuman[:50] + "...", // 只显示前50个字符
+			"payload_length": len(jsonPayload),
+			"model":          request.Model,
+			"attempt":        attempt,
+		}).Debug("Sending request to Cursor API")
+
+		resp, err := s.client.R().
+			SetContext(ctx).
+			SetHeaders(headers).
+			SetBody(jsonPayload).
+			DisableAutoReadResponse().
+			Post(cursorAPIURL)
+		if err != nil {
+			if attempt < maxRetries {
+				logrus.WithError(err).Warnf("Cursor request failed (attempt %d/%d), retrying...", attempt, maxRetries)
+				time.Sleep(time.Second * time.Duration(attempt))
+				continue
+			}
+			return nil, fmt.Errorf("cursor request failed: %w", err)
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			body, _ := io.ReadAll(resp.Response.Body)
+			resp.Response.Body.Close()
+			message := strings.TrimSpace(string(body))
+
+			// 记录详细的错误信息
+			logrus.WithFields(logrus.Fields{
+				"status_code": resp.StatusCode,
+				"response":    message,
+				"headers":     resp.Header,
+				"attempt":     attempt,
+			}).Error("Cursor API returned non-OK status")
+
+			// 如果是 403 错误且还有重试机会,清除缓存并重试
+			if resp.StatusCode == http.StatusForbidden && attempt < maxRetries {
+				logrus.Warn("Received 403 Access Denied, refreshing browser fingerprint and clearing token cache...")
+
+				// 刷新浏览器指纹
+				s.headerGenerator.Refresh()
+				logrus.WithFields(logrus.Fields{
+					"platform":       s.headerGenerator.GetProfile().Platform,
+					"chrome_version": s.headerGenerator.GetProfile().ChromeVersion,
+				}).Debug("Refreshed browser fingerprint")
+
+				// 清除 token 缓存
+				s.scriptMutex.Lock()
+				s.scriptCache = ""
+				s.scriptCacheTime = time.Time{}
+				s.scriptMutex.Unlock()
+
+				time.Sleep(time.Second * time.Duration(attempt))
+				continue
+			}
+
+			if strings.Contains(message, "Attention Required! | Cloudflare") {
+				message = "Cloudflare 403"
+			}
+			return nil, middleware.NewCursorWebError(resp.StatusCode, message)
+		}
+
+		// 成功,返回结果
+		output := make(chan interface{}, 32)
+		go s.consumeSSE(ctx, resp.Response, output)
+		return output, nil
 	}
 
-	output := make(chan interface{}, 32)
-	go s.consumeSSE(ctx, resp.Response, output)
-	return output, nil
+	return nil, fmt.Errorf("failed after %d attempts", maxRetries)
 }
 
 func (s *CursorService) consumeSSE(ctx context.Context, resp *http.Response, output chan interface{}) {
@@ -155,8 +198,8 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 	s.scriptMutex.RUnlock()
 
 	var scriptBody string
-	// 缓存有效期30分钟
-	if cached != "" && time.Since(lastFetch) < 30*time.Minute {
+	// 缓存有效期缩短到1分钟,避免 token 过期
+	if cached != "" && time.Since(lastFetch) < 1*time.Minute {
 		scriptBody = cached
 	} else {
 		resp, err := s.client.R().
@@ -170,6 +213,11 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 				logrus.Warnf("Failed to fetch script, using cached version: %v", err)
 				scriptBody = cached
 			} else {
+				// 清除缓存
+				s.scriptMutex.Lock()
+				s.scriptCache = ""
+				s.scriptCacheTime = time.Time{}
+				s.scriptMutex.Unlock()
 				return "", fmt.Errorf("failed to fetch script: %w", err)
 			}
 		} else if resp.StatusCode != http.StatusOK {
@@ -178,6 +226,11 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 				logrus.Warnf("Script fetch returned status %d, using cached version", resp.StatusCode)
 				scriptBody = cached
 			} else {
+				// 清除缓存
+				s.scriptMutex.Lock()
+				s.scriptCache = ""
+				s.scriptCacheTime = time.Time{}
+				s.scriptMutex.Unlock()
 				message := strings.TrimSpace(resp.String())
 				return "", middleware.NewCursorWebError(resp.StatusCode, message)
 			}
@@ -194,6 +247,11 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 	compiled := s.prepareJS(scriptBody)
 	value, err := utils.RunJS(compiled)
 	if err != nil {
+		// JS 执行失败时清除缓存
+		s.scriptMutex.Lock()
+		s.scriptCache = ""
+		s.scriptCacheTime = time.Time{}
+		s.scriptMutex.Unlock()
 		return "", fmt.Errorf("failed to execute JS: %w", err)
 	}
 
@@ -266,32 +324,9 @@ func (s *CursorService) truncateMessages(messages []models.Message) []models.Mes
 }
 
 func (s *CursorService) chatHeaders(xIsHuman string) map[string]string {
-	return map[string]string{
-		"sec-ch-ua-platform": `"macOS"`,
-		"x-path":             "/api/chat",
-		"Referer":            "https://cursor.com/en-US/learn/how-ai-models-work",
-		"sec-ch-ua":          `"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"`,
-		"x-method":           "POST",
-		"sec-ch-ua-mobile":   "?0",
-		"x-is-human":         xIsHuman,
-		"User-Agent":         s.config.FP.UserAgent,
-		"content-type":       "application/json",
-	}
+	return s.headerGenerator.GetChatHeaders(xIsHuman)
 }
 
 func (s *CursorService) scriptHeaders() map[string]string {
-	return map[string]string{
-		"User-Agent":                 s.config.FP.UserAgent,
-		"sec-ch-ua-arch":             `"x86"`,
-		"sec-ch-ua-platform":         `"Windows"`,
-		"sec-ch-ua":                  `"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"`,
-		"sec-ch-ua-bitness":          `"64"`,
-		"sec-ch-ua-mobile":           "?0",
-		"sec-ch-ua-platform-version": `"19.0.0"`,
-		"sec-fetch-site":             "same-origin",
-		"sec-fetch-mode":             "no-cors",
-		"sec-fetch-dest":             "script",
-		"referer":                    "https://cursor.com/cn/learn/how-ai-models-work",
-		"accept-language":            "zh-CN,zh;q=0.9,en;q=0.8",
-	}
+	return s.headerGenerator.GetScriptHeaders()
 }

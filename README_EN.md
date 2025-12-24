@@ -105,6 +105,15 @@ In any app that supports custom OpenAI API (e.g., ChatGPT Next Web, Lobe Chat):
 | `MODELS` | See `.env.example` | Supported models (comma-separated) |
 | `TIMEOUT` | `30` | Request timeout (seconds) |
 
+### Troubleshooting
+
+Having issues? Check the **[Troubleshooting Guide](TROUBLESHOOTING.md)** for solutions to common problems, including:
+- 403 Access Denied errors
+- Token fetch failures
+- Connection timeouts
+- Cloudflare blocking
+
+
 ### Windows Startup Scripts
 
 Two Windows startup scripts are provided:

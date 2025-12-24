@@ -105,6 +105,15 @@ curl -X POST http://localhost:8002/v1/chat/completions \
 | `MODELS` | 见 `.env.example` | 支持的模型列表（逗号分隔） |
 | `TIMEOUT` | `30` | 请求超时时间（秒） |
 
+### 故障排除
+
+遇到问题？查看 **[故障排除指南](TROUBLESHOOTING.md)** 了解常见问题的解决方案，包括：
+- 403 Access Denied 错误
+- Token 获取失败
+- 连接超时
+- Cloudflare 拦截
+
+
 ### Windows 启动脚本说明
 
 项目提供两个 Windows 启动脚本：
