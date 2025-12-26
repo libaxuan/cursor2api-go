@@ -43,7 +43,7 @@ if not exist .env (
     (
         echo # 服务器配置
         echo PORT=8002
-        echo DEBUG=true
+        echo DEBUG=false
         echo.
         echo # API配置
         echo API_KEY=0000
@@ -102,32 +102,7 @@ set API_KEY=!API_KEY: =!
 
 :: 显示服务信息
 echo.
-echo [信息] 服务启动信息:
-echo   服务器地址: http://127.0.0.1:!PORT!
-echo   在线文档: http://127.0.0.1:!PORT!
-echo   API密钥: !API_KEY!
-echo.
-
-echo [接口] 支持的接口:
-echo   GET    / - API文档页面
-echo   GET    /v1/models - 获取模型列表
-echo   POST   /v1/chat/completions - 聊天完成
-echo   GET    /health - 健康检查
-echo.
-
-echo [模型] 支持的模型 ^(23个^):
-echo   - gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano
-echo   - gpt-4.1, gpt-4o, o3, o4-mini
-echo   - claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet
-echo   - claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-echo   - gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro
-echo   - deepseek-r1, deepseek-v3.1, kimi-k2-instruct
-echo   - grok-3
-echo.
-
-echo [信息] 正在启动服务器...
-echo =========================================
-echo 按 Ctrl+C 停止服务器
+echo [成功] 准备就绪，正在启动服务...
 echo.
 
 :: 启动服务

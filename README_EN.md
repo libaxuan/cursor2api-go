@@ -100,10 +100,30 @@ In any app that supports custom OpenAI API (e.g., ChatGPT Next Web, Lobe Chat):
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `8002` | Server port |
-| `DEBUG` | `true` | Debug mode |
+| `DEBUG` | `false` | Debug mode (shows detailed logs and route info when enabled) |
 | `API_KEY` | `0000` | API authentication key |
 | `MODELS` | See `.env.example` | Supported models (comma-separated) |
 | `TIMEOUT` | `30` | Request timeout (seconds) |
+
+### Debug Mode
+
+By default, the service runs in clean mode. To enable detailed logging:
+
+**Option 1**: Modify `.env` file
+```bash
+DEBUG=true
+```
+
+**Option 2**: Use environment variable
+```bash
+DEBUG=true ./cursor2api-go
+```
+
+Debug mode displays:
+- Detailed GIN route information
+- Verbose request logs
+- x-is-human token details
+- Browser fingerprint configuration
 
 ### Troubleshooting
 

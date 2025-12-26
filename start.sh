@@ -67,7 +67,7 @@ setup_env() {
         cat > .env << EOF
 # 服务器配置
 PORT=8002
-DEBUG=true
+DEBUG=false
 
 # API配置
 API_KEY=0000
@@ -105,36 +105,8 @@ build_app() {
 
 # 显示服务信息
 show_info() {
-    # 获取配置信息
-    PORT=$(grep -E '^PORT=' .env 2>/dev/null | cut -d'=' -f2 | tr -d ' ' || echo "8002")
-    API_KEY=$(grep -E '^API_KEY=' .env 2>/dev/null | cut -d'=' -f2 | tr -d ' ' || echo "0000")
-
     echo ""
-    echo -e "${PURPLE}🚀 服务启动信息:${NC}"
-    echo -e "  ${WHITE}服务器地址:${NC} ${CYAN}http://127.0.0.1:${PORT}${NC}"
-    echo -e "  ${WHITE}在线文档:${NC} ${CYAN}http://127.0.0.1:${PORT}${NC}"
-    echo -e "  ${WHITE}API密钥:${NC} ${YELLOW}${API_KEY}${NC}"
-    echo ""
-
-    echo -e "${PURPLE}📡 支持的接口:${NC}"
-    echo -e "  ${GREEN}GET${NC}    ${WHITE}/${NC} - API文档页面"
-    echo -e "  ${GREEN}GET${NC}    ${WHITE}/v1/models${NC} - 获取模型列表"
-    echo -e "  ${BLUE}POST${NC}   ${WHITE}/v1/chat/completions${NC} - 聊天完成"
-    echo -e "  ${GREEN}GET${NC}    ${WHITE}/health${NC} - 健康检查"
-    echo ""
-
-    echo -e "${PURPLE}🤖 支持的模型 (23个):${NC}"
-    echo "  - gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano"
-    echo "  - gpt-4.1, gpt-4o, o3, o4-mini"
-    echo "  - claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet"
-    echo "  - claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus"
-    echo "  - gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro"
-    echo "  - deepseek-r1, deepseek-v3.1, kimi-k2-instruct"
-    echo "  - grok-3"
-
-    echo ""
-    echo -e "${GREEN}🟢 正在启动服务器...${NC}"
-    echo -e "${CYAN}=========================================${NC}"
+    echo -e "${GREEN}✅ 准备就绪，正在启动服务...${NC}"
     echo ""
 }
 

@@ -100,10 +100,30 @@ curl -X POST http://localhost:8002/v1/chat/completions \
 | 变量名 | 默认值 | 说明 |
 |--------|--------|------|
 | `PORT` | `8002` | 服务器端口 |
-| `DEBUG` | `true` | 调试模式 |
+| `DEBUG` | `false` | 调试模式（启用后显示详细日志和路由信息） |
 | `API_KEY` | `0000` | API 认证密钥 |
 | `MODELS` | 见 `.env.example` | 支持的模型列表（逗号分隔） |
 | `TIMEOUT` | `30` | 请求超时时间（秒） |
+
+### 调试模式
+
+默认情况下，服务以简洁模式运行。如需启用详细日志：
+
+**方式 1**: 修改 `.env` 文件
+```bash
+DEBUG=true
+```
+
+**方式 2**: 使用环境变量
+```bash
+DEBUG=true ./cursor2api-go
+```
+
+调试模式会显示：
+- 详细的 GIN 路由信息
+- 每个请求的详细日志
+- x-is-human token 信息
+- 浏览器指纹配置
 
 ### 故障排除
 
