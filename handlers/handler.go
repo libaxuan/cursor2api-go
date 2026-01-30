@@ -18,109 +18,21 @@ import (
 type Handler struct {
 	config        *config.Config
 	cursorService *services.CursorService
+	docsContent   []byte
 }
 
 // NewHandler 创建新的处理器
 func NewHandler(cfg *config.Config) *Handler {
 	cursorService := services.NewCursorService(cfg)
 
-	return &Handler{
-		config:        cfg,
-		cursorService: cursorService,
-	}
-}
-
-// ListModels 列出可用模型
-func (h *Handler) ListModels(c *gin.Context) {
-	modelNames := h.config.GetModels()
-	modelList := make([]models.Model, 0, len(modelNames))
-
-	for _, modelID := range modelNames {
-		// 获取模型配置信息
-		modelConfig, exists := models.GetModelConfig(modelID)
-		
-		model := models.Model{
-			ID:      modelID,
-			Object:  "model",
-			Created: time.Now().Unix(),
-			OwnedBy: "cursor2api",
-		}
-		
-		// 如果找到模型配置，添加max_tokens和context_window信息
-		if exists {
-			model.MaxTokens = modelConfig.MaxTokens
-			model.ContextWindow = modelConfig.ContextWindow
-		}
-		
-		modelList = append(modelList, model)
-	}
-
-	response := models.ModelsResponse{
-		Object: "list",
-		Data:   modelList,
-	}
-
-	c.JSON(http.StatusOK, response)
-}
-
-// ChatCompletions 处理聊天完成请求
-func (h *Handler) ChatCompletions(c *gin.Context) {
-	var request models.ChatCompletionRequest
-	if err := c.ShouldBindJSON(&request); err != nil {
-		logrus.WithError(err).Error("Failed to bind request")
-		c.JSON(http.StatusBadRequest, models.NewErrorResponse(
-			"Invalid request format",
-			"invalid_request_error",
-			"invalid_json",
-		))
-		return
-	}
-
-	// 验证模型
-	if !h.config.IsValidModel(request.Model) {
-		c.JSON(http.StatusBadRequest, models.NewErrorResponse(
-			"Invalid model specified",
-			"invalid_request_error",
-			"model_not_found",
-		))
-		return
-	}
-
-	// 验证消息
-	if len(request.Messages) == 0 {
-		c.JSON(http.StatusBadRequest, models.NewErrorResponse(
-			"Messages cannot be empty",
-			"invalid_request_error",
-			"missing_messages",
-		))
-		return
-	}
-
-	// 验证并调整max_tokens参数
-	request.MaxTokens = models.ValidateMaxTokens(request.Model, request.MaxTokens)
-
-	// 调用Cursor服务
-	chatGenerator, err := h.cursorService.ChatCompletion(c.Request.Context(), &request)
-	if err != nil {
-		logrus.WithError(err).Error("Failed to create chat completion")
-		middleware.HandleError(c, err)
-		return
-	}
-
-	// 根据是否流式返回不同响应
-	if request.Stream {
-		utils.SafeStreamWrapper(utils.StreamChatCompletion, c, chatGenerator)
-	} else {
-		utils.NonStreamChatCompletion(c, chatGenerator)
-	}
-}
-
-// ServeDocs 服务API文档页面
-func (h *Handler) ServeDocs(c *gin.Context) {
-	// 尝试读取docs.html文件
+	// 预加载文档内容
 	docsPath := "static/docs.html"
-	if _, err := os.Stat(docsPath); os.IsNotExist(err) {
-		// 如果文件不存在，返回简单的HTML页面
+	var docsContent []byte
+
+	if data, err := os.ReadFile(docsPath); err == nil {
+		docsContent = data
+	} else {
+		// 如果文件不存在，使用默认的简单HTML页面
 		simpleHTML := `
 <!DOCTYPE html>
 <html lang="en">
@@ -212,7 +124,7 @@ func (h *Handler) ServeDocs(c *gin.Context) {
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "gpt-4o",
+    "model": "claude-4.5-sonnet",
     "messages": [
       {"role": "user", "content": "Hello!"}
     ]
@@ -226,12 +138,105 @@ func (h *Handler) ServeDocs(c *gin.Context) {
     </div>
 </body>
 </html>`
-		c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(simpleHTML))
+		docsContent = []byte(simpleHTML)
+	}
+
+	return &Handler{
+		config:        cfg,
+		cursorService: cursorService,
+		docsContent:   docsContent,
+	}
+
+}
+
+// ListModels 列出可用模型
+func (h *Handler) ListModels(c *gin.Context) {
+	modelNames := h.config.GetModels()
+	modelList := make([]models.Model, 0, len(modelNames))
+
+	for _, modelID := range modelNames {
+		// 获取模型配置信息
+		modelConfig, exists := models.GetModelConfig(modelID)
+
+		model := models.Model{
+			ID:      modelID,
+			Object:  "model",
+			Created: time.Now().Unix(),
+			OwnedBy: "cursor2api",
+		}
+
+		// 如果找到模型配置，添加max_tokens和context_window信息
+		if exists {
+			model.MaxTokens = modelConfig.MaxTokens
+			model.ContextWindow = modelConfig.ContextWindow
+		}
+
+		modelList = append(modelList, model)
+	}
+
+	response := models.ModelsResponse{
+		Object: "list",
+		Data:   modelList,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// ChatCompletions 处理聊天完成请求
+func (h *Handler) ChatCompletions(c *gin.Context) {
+	var request models.ChatCompletionRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		logrus.WithError(err).Error("Failed to bind request")
+		c.JSON(http.StatusBadRequest, models.NewErrorResponse(
+			"Invalid request format",
+			"invalid_request_error",
+			"invalid_json",
+		))
 		return
 	}
 
-	// 读取并返回文档文件
-	c.File(docsPath)
+	// 验证模型
+	if !h.config.IsValidModel(request.Model) {
+		c.JSON(http.StatusBadRequest, models.NewErrorResponse(
+			"Invalid model specified",
+			"invalid_request_error",
+			"model_not_found",
+		))
+		return
+	}
+
+	// 验证消息
+	if len(request.Messages) == 0 {
+		c.JSON(http.StatusBadRequest, models.NewErrorResponse(
+			"Messages cannot be empty",
+			"invalid_request_error",
+			"missing_messages",
+		))
+		return
+	}
+
+	// 验证并调整max_tokens参数
+	request.MaxTokens = models.ValidateMaxTokens(request.Model, request.MaxTokens)
+
+	// 调用Cursor服务
+	chatGenerator, err := h.cursorService.ChatCompletion(c.Request.Context(), &request)
+	if err != nil {
+		logrus.WithError(err).Error("Failed to create chat completion")
+		middleware.HandleError(c, err)
+		return
+	}
+
+	// 根据是否流式返回不同响应
+	if request.Stream {
+		utils.SafeStreamWrapper(utils.StreamChatCompletion, c, chatGenerator, request.Model)
+	} else {
+		utils.NonStreamChatCompletion(c, chatGenerator, request.Model)
+	}
+}
+
+// ServeDocs 服务API文档页面
+func (h *Handler) ServeDocs(c *gin.Context) {
+	c.Data(http.StatusOK, "text/html; charset=utf-8", h.docsContent)
 }
 
 // Health 健康检查

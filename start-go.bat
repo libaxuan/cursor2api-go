@@ -2,135 +2,110 @@
 chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
 
-:: Cursor2API Go°æ±¾Æô¶¯½Å±¾
+:: Cursor2API Goå¯åŠ¨è„šæœ¬
 
 echo.
 echo =========================================
-echo     Cursor2API Go°æ±¾Æô¶¯Æ÷
+echo     ğŸš€  Cursor2APIå¯åŠ¨å™¨ Goç‰ˆæœ¬
 echo =========================================
 echo.
 
-:: ¼ì²éGoÊÇ·ñ°²×°
+:: æ£€æŸ¥Goæ˜¯å¦å®‰è£…
 go version >nul 2>&1
 if errorlevel 1 (
-    echo [´íÎó] Go Î´°²×°£¬ÇëÏÈ°²×° Go 1.21 »ò¸ü¸ß°æ±¾
-    echo [ÌáÊ¾] °²×°·½·¨: https://golang.org/dl/
+    echo [é”™è¯¯] Go æœªå®‰è£…ï¼Œè¯·å…ˆå®‰è£… Go 1.21 æˆ–æ›´é«˜ç‰ˆæœ¬
+    echo [æç¤º] å®‰è£…æ–¹æ³•: https://golang.org/dl/
     pause
     exit /b 1
 )
 
-:: ÏÔÊ¾Go°æ±¾²¢¼ì²é°æ±¾ºÅ
+:: æ˜¾ç¤ºGoç‰ˆæœ¬å¹¶æ£€æŸ¥ç‰ˆæœ¬å·
 for /f "tokens=3" %%i in ('go version') do set GO_VERSION=%%i
 set GO_VERSION=!GO_VERSION:go=!
-echo [³É¹¦] Go °æ±¾¼ì²éÍ¨¹ı: !GO_VERSION!
+echo [æˆåŠŸ] Go ç‰ˆæœ¬æ£€æŸ¥é€šè¿‡: !GO_VERSION!
 
-:: ¼ì²éNode.jsÊÇ·ñ°²×°
+:: æ£€æŸ¥Node.jsæ˜¯å¦å®‰è£…
 node --version >nul 2>&1
 if errorlevel 1 (
-    echo [´íÎó] Node.js Î´°²×°£¬ÇëÏÈ°²×° Node.js 18 »ò¸ü¸ß°æ±¾
-    echo [ÌáÊ¾] °²×°·½·¨: https://nodejs.org/
+    echo [é”™è¯¯] Node.js æœªå®‰è£…ï¼Œè¯·å…ˆå®‰è£… Node.js 18 æˆ–æ›´é«˜ç‰ˆæœ¬
+    echo [æç¤º] å®‰è£…æ–¹æ³•: https://nodejs.org/
     pause
     exit /b 1
 )
 
-:: ÏÔÊ¾Node.js°æ±¾
+:: æ˜¾ç¤ºNode.jsç‰ˆæœ¬
 for /f "delims=" %%i in ('node --version') do set NODE_VERSION=%%i
-echo [³É¹¦] Node.js °æ±¾¼ì²éÍ¨¹ı: !NODE_VERSION!
+echo [æˆåŠŸ] Node.js ç‰ˆæœ¬æ£€æŸ¥é€šè¿‡: !NODE_VERSION!
 
-:: ´´½¨.envÎÄ¼ş£¨Èç¹û²»´æÔÚ£©
+:: åˆ›å»º.envæ–‡ä»¶ï¼ˆå¦‚æœä¸å­˜åœ¨ï¼‰
 if not exist .env (
-    echo [ĞÅÏ¢] ´´½¨Ä¬ÈÏ .env ÅäÖÃÎÄ¼ş...
+    echo [ä¿¡æ¯] åˆ›å»ºé»˜è®¤ .env é…ç½®æ–‡ä»¶...
     (
-        echo # ·şÎñÆ÷ÅäÖÃ
+        echo # æœåŠ¡å™¨é…ç½®
         echo PORT=8002
-        echo DEBUG=true
+        echo DEBUG=false
         echo.
-        echo # APIÅäÖÃ
+        echo # APIé…ç½®
         echo API_KEY=0000
-        echo MODELS=gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3,grok-3-mini,grok-4,code-supernova-1-million
+        echo MODELS=gpt-5.1,gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,gemini-3.0-pro,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3
         echo SYSTEM_PROMPT_INJECT=
         echo.
-        echo # ÇëÇóÅäÖÃ
+        echo # è¯·æ±‚é…ç½®
         echo TIMEOUT=30
         echo USER_AGENT=Mozilla/5.0 ^(Windows NT 10.0; Win64; x64^) AppleWebKit/537.36 ^(KHTML, like Gecko^) Chrome/140.0.0.0 Safari/537.36
         echo.
-        echo # CursorÅäÖÃ
+        echo # Cursoré…ç½®
         echo SCRIPT_URL=https://cursor.com/149e9513-01fa-4fb0-aad4-566afd725d1b/2d206a39-8ed7-437e-a3be-862e0f06eea3/a-4-a/c.js?i=0^^^&v=3^^^&h=cursor.com
     ) > .env
-    echo [³É¹¦] Ä¬ÈÏ .env ÎÄ¼şÒÑ´´½¨
+    echo [æˆåŠŸ] é»˜è®¤ .env æ–‡ä»¶å·²åˆ›å»º
 ) else (
-    echo [³É¹¦] ÅäÖÃÎÄ¼ş .env ÒÑ´æÔÚ
+    echo [æˆåŠŸ] é…ç½®æ–‡ä»¶ .env å·²å­˜åœ¨
 )
 
-:: ÏÂÔØÒÀÀµ
+:: ä¸‹è½½ä¾èµ–
 echo.
-echo [ĞÅÏ¢] ÕıÔÚÏÂÔØ Go ÒÀÀµ...
+echo [ä¿¡æ¯] æ­£åœ¨ä¸‹è½½ Go ä¾èµ–...
 go mod download
 if errorlevel 1 (
-    echo [´íÎó] ÒÀÀµÏÂÔØÊ§°Ü£¡
+    echo [é”™è¯¯] ä¾èµ–ä¸‹è½½å¤±è´¥ï¼
     pause
     exit /b 1
 )
 
-:: ¹¹½¨Ó¦ÓÃ
-echo [ĞÅÏ¢] ÕıÔÚ±àÒë Go Ó¦ÓÃ...
+:: æ„å»ºåº”ç”¨
+echo [ä¿¡æ¯] æ­£åœ¨ç¼–è¯‘ Go åº”ç”¨...
 go build -o cursor2api-go.exe .
 if errorlevel 1 (
-    echo [´íÎó] ±àÒëÊ§°Ü£¡
+    echo [é”™è¯¯] ç¼–è¯‘å¤±è´¥ï¼
     pause
     exit /b 1
 )
 
-:: ¼ì²é¹¹½¨ÊÇ·ñ³É¹¦
+:: æ£€æŸ¥æ„å»ºæ˜¯å¦æˆåŠŸ
 if not exist cursor2api-go.exe (
-    echo [´íÎó] ±àÒëÊ§°Ü - ¿ÉÖ´ĞĞÎÄ¼şÎ´ÕÒµ½£¡
+    echo [é”™è¯¯] ç¼–è¯‘å¤±è´¥ - å¯æ‰§è¡Œæ–‡ä»¶æœªæ‰¾åˆ°
     pause
     exit /b 1
 )
 
-echo [³É¹¦] Ó¦ÓÃ±àÒë³É¹¦£¡
+echo [æˆåŠŸ] åº”ç”¨ç¼–è¯‘æˆåŠŸï¼
 
-:: »ñÈ¡¶Ë¿ÚÅäÖÃ
+:: è·å–ç«¯å£é…ç½®
 set PORT=8002
 for /f "tokens=2 delims==" %%i in ('findstr /r "^PORT" .env 2^>nul') do set PORT=%%i
 set PORT=!PORT: =!
 
-:: »ñÈ¡APIÃÜÔ¿
+:: è·å–APIå¯†é’¥
 set API_KEY=0000
 for /f "tokens=2 delims==" %%i in ('findstr /r "^API_KEY" .env 2^>nul') do set API_KEY=%%i
 set API_KEY=!API_KEY: =!
 
-:: ÏÔÊ¾·şÎñĞÅÏ¢
+:: æ˜¾ç¤ºæœåŠ¡ä¿¡æ¯
 echo.
-echo [Æô¶¯] ·şÎñÆô¶¯ĞÅÏ¢:
-echo   ·şÎñÆ÷µØÖ·: http://127.0.0.1:!PORT!
-echo   ÔÚÏßÎÄµµ: http://127.0.0.1:!PORT!
-echo   APIÃÜÔ¿: !API_KEY!
+echo [æˆåŠŸ] å‡†å¤‡å°±ç»ªï¼Œæ­£åœ¨å¯åŠ¨æœåŠ¡...
 echo.
 
-echo [½Ó¿Ú] Ö§³ÖµÄ½Ó¿Ú:
-echo   GET    / - APIÎÄµµÒ³Ãæ
-echo   GET    /v1/models - »ñÈ¡Ä£ĞÍÁĞ±í
-echo   POST   /v1/chat/completions - ÁÄÌìÍê³É
-echo   GET    /health - ½¡¿µ¼ì²é
-echo.
-
-echo [Ä£ĞÍ] Ö§³ÖµÄÄ£ĞÍ ^(24¸ö^):
-echo   - gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano
-echo   - gpt-4.1, gpt-4o, o3, o4-mini
-echo   - claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet
-echo   - claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-echo   - gemini-2.5-pro, gemini-2.5-flash
-echo   - deepseek-r1, deepseek-v3.1, kimi-k2-instruct
-echo   - grok-3, grok-3-mini, grok-4, code-supernova-1-million
-echo.
-
-echo [ÔËĞĞ] ÕıÔÚÆô¶¯·şÎñÆ÷...
-echo =========================================
-echo °´ Ctrl+C Í£Ö¹·şÎñÆ÷
-echo.
-
-:: Æô¶¯·şÎñ
+:: å¯åŠ¨æœåŠ¡
 cursor2api-go.exe
 
 pause

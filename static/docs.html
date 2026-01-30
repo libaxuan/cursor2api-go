@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cursor2API - 强大的AI模型API代理</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -15,7 +20,11 @@
             min-height: 100vh;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
         .header {
             text-align: center;
@@ -27,7 +36,7 @@
             font-size: 3rem;
             font-weight: 700;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .header .subtitle {
@@ -38,7 +47,7 @@
         .main-content {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
 
@@ -60,11 +69,24 @@
             background: none;
         }
 
-        .nav-tab:hover { background: #e9ecef; color: #495057; }
-        .nav-tab.active { background: #007bff; color: white; }
+        .nav-tab:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
 
-        .tab-content { display: none; padding: 40px; }
-        .tab-content.active { display: block; }
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 40px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         .status-card {
             background: linear-gradient(135deg, #28a745, #20c997);
@@ -89,7 +111,10 @@
             border-left: 4px solid #007bff;
         }
 
-        .info-card h3 { color: #007bff; margin-bottom: 15px; }
+        .info-card h3 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
 
         .info-card .value {
             font-family: Monaco, monospace;
@@ -119,7 +144,7 @@
         .model-card:hover {
             border-color: #007bff;
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,123,255,0.2);
+            box-shadow: 0 10px 25px rgba(0, 123, 255, 0.2);
         }
 
         .model-card.selected {
@@ -163,7 +188,9 @@
             transition: background 0.3s ease;
         }
 
-        .copy-btn:hover { background: #0056b3; }
+        .copy-btn:hover {
+            background: #0056b3;
+        }
 
         .code-block code {
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -191,29 +218,45 @@
             margin-right: 10px;
         }
 
-        .method-get { background: #28a745; color: white; }
-        .method-post { background: #007bff; color: white; }
+        .method-get {
+            background: #28a745;
+            color: white;
+        }
+
+        .method-post {
+            background: #007bff;
+            color: white;
+        }
 
         .footer {
             text-align: center;
             padding: 30px;
             color: #6c757d;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255, 255, 255, 0.9);
             margin-top: 40px;
             border-radius: 15px;
         }
 
         @media (max-width: 768px) {
-            .header h1 { font-size: 2rem; }
-            .models-grid { grid-template-columns: 1fr; }
-            .api-info { grid-template-columns: 1fr; }
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .api-info {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚀 Cursor2API Go版本</h1>
+            <h1>🚀 Cursor2API</h1>
             <p class="subtitle">强大的AI模型API代理服务 - OpenAI兼容接口</p>
         </div>
 
@@ -229,7 +272,7 @@
             <div id="overview" class="tab-content active">
                 <div class="status-card">
                     <h2>✅ 服务运行正常</h2>
-                    <p>Cursor2API Go版本已成功启动并运行中</p>
+                    <p> Cursor2API已成功启动并运行中</p>
                 </div>
 
                 <div class="api-info">
@@ -253,18 +296,36 @@
 
                 <div style="margin-top: 30px;">
                     <h3>🚀 快速开始</h3>
+
                     <div class="code-block">
                         <button class="copy-btn" onclick="copyCode(this)">复制</button>
                         <code># 获取模型列表
-curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models
+curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
+                    </div>
 
-# 发送聊天请求
-curl -X POST http://localhost:8002/v1/chat/completions \
+                    <h4 style="margin-top: 15px; color: #555;">非流式聊天 (Non-Streaming)</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code>curl -X POST http://localhost:8002/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "gpt-4o",
-    "messages": [{"role": "user", "content": "Hello!"}]
+    "model": "claude-4.5-sonnet",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": false
+  }'</code>
+                    </div>
+
+                    <h4 style="margin-top: 15px; color: #555;">流式聊天 (Streaming)</h4>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                        <code>curl -X POST http://localhost:8002/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer 0000" \
+  -d '{
+    "model": "claude-4.5-sonnet",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": true
   }'</code>
                     </div>
                 </div>
@@ -272,13 +333,17 @@ curl -X POST http://localhost:8002/v1/chat/completions \
 
             <!-- 模型页面 -->
             <div id="models" class="tab-content">
-                <h2>🤖 支持的AI模型 (24个)</h2>
+                <h2>🤖 支持的AI模型 (23个)</h2>
                 <p>点击模型卡片可查看详细信息和使用示例</p>
 
                 <div class="models-grid" id="modelsGrid">
                     <div class="model-card" onclick="selectModel('gpt-5')">
                         <div class="model-name">gpt-5</div>
                         <div class="provider">OpenAI GPT-5</div>
+                    </div>
+                    <div class="model-card" onclick="selectModel('gpt-5.1')">
+                        <div class="model-name">gpt-5.1</div>
+                        <div class="provider">OpenAI GPT-5.1</div>
                     </div>
                     <div class="model-card" onclick="selectModel('gpt-5-codex')">
                         <div class="model-name">gpt-5-codex</div>
@@ -336,6 +401,10 @@ curl -X POST http://localhost:8002/v1/chat/completions \
                         <div class="model-name">gemini-2.5-flash</div>
                         <div class="provider">Google Gemini</div>
                     </div>
+                    <div class="model-card" onclick="selectModel('gemini-3.0-pro')">
+                        <div class="model-name">gemini-3.0-pro</div>
+                        <div class="provider">Google Gemini</div>
+                    </div>
                     <div class="model-card" onclick="selectModel('o3')">
                         <div class="model-name">o3</div>
                         <div class="provider">OpenAI O-Series</div>
@@ -359,18 +428,6 @@ curl -X POST http://localhost:8002/v1/chat/completions \
                     <div class="model-card" onclick="selectModel('grok-3')">
                         <div class="model-name">grok-3</div>
                         <div class="provider">xAI Grok</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('grok-3-mini')">
-                        <div class="model-name">grok-3-mini</div>
-                        <div class="provider">xAI Grok</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('grok-4')">
-                        <div class="model-name">grok-4</div>
-                        <div class="provider">xAI Grok</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('code-supernova-1-million')">
-                        <div class="model-name">code-supernova-1-million</div>
-                        <div class="provider">Code Supernova</div>
                     </div>
                 </div>
 
@@ -429,7 +486,7 @@ curl -X POST http://localhost:8002/v1/chat/completions \
         </div>
 
         <div class="footer">
-            <p>© 2024 Cursor2API Go版本 | 强大的AI模型API代理服务</p>
+            <p>©2025 Cursor2API | 强大的AI模型API代理服务</p>
         </div>
     </div>
 
@@ -501,4 +558,5 @@ curl -X POST http://localhost:8002/v1/chat/completions \
         }
     </script>
 </body>
+
 </html>
