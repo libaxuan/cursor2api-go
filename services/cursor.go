@@ -76,7 +76,7 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 
 	payload := models.CursorRequest{
 		Context:  []interface{}{},
-		Model:    request.Model,
+		Model:    models.GetInternalID(request.Model),
 		ID:       utils.GenerateRandomString(16),
 		Messages: cursorMessages,
 		Trigger:  "submit-message",

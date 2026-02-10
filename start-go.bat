@@ -13,7 +13,7 @@ echo.
 :: 检查Go是否安装
 go version >nul 2>&1
 if errorlevel 1 (
-    echo [错误] Go 未安装，请先安装 Go 1.21 或更高版本
+    echo [错误] Go 未安装，请先安装 Go 1.24 或更高版本
     echo [提示] 安装方法: https://golang.org/dl/
     pause
     exit /b 1
@@ -37,6 +37,21 @@ if errorlevel 1 (
 for /f "delims=" %%i in ('node --version') do set NODE_VERSION=%%i
 echo [成功] Node.js 版本检查通过: !NODE_VERSION!
 
+:: 检查jscode目录
+if not exist jscode\main.js (
+    echo [错误] 缺少 jscode 目录或核心脚本 (main.js)
+    echo [提示] 请确保在源码根目录下执行脚本，并检查 jscode 文件夹是否完整
+    pause
+    exit /b 1
+)
+if not exist jscode\env.js (
+    echo [错误] 缺少 jscode 目录或核心脚本 (env.js)
+    echo [提示] 请确保在源码根目录下执行脚本，并检查 jscode 文件夹是否完整
+    pause
+    exit /b 1
+)
+echo [成功] jscode 依赖检查通过
+
 :: 创建.env文件（如果不存在）
 if not exist .env (
     echo [信息] 创建默认 .env 配置文件...
@@ -47,7 +62,7 @@ if not exist .env (
         echo.
         echo # API配置
         echo API_KEY=0000
-        echo MODELS=gpt-5.1,gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,gemini-3.0-pro,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3
+        echo MODELS=gpt-5.2-high,claude-opus-4.6,claude-sonnet-4.5,gpt-codex-5.3-high,composer-1.5,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1
         echo SYSTEM_PROMPT_INJECT=
         echo.
         echo # 请求配置

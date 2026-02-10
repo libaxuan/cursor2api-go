@@ -4,7 +4,7 @@
 
 一个将 Cursor Web 转换为 OpenAI 兼容 API 的 Go 服务。完全兼容 OpenAI API 格式，支持本地运行。
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ 功能特性
@@ -14,21 +14,20 @@
 - ✅ 支持 23 种先进 AI 模型
 - ✅ 高性能 Go 语言实现
 - ✅ 自动处理 Cursor Web 认证
-- ✅ 简洁的 Web 界面
+- ✅ **全新内置 Dashboard**: 基于 Antigravity 风格的现代化理管理界面
 
 ## 🤖 支持的模型 (23个)
 
-- **OpenAI 系列**: gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano, gpt-4.1, gpt-4o, o3, o4-mini
-- **Claude 系列**: claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet, claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-- **Gemini 系列**: gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro
-- **其他模型**: deepseek-r1, deepseek-v3.1, kimi-k2-instruct, grok-3
+- **Claude 系列**: opus-4.6, sonnet-4.5, claude-3.7-sonnet, claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-3.5-sonnet, claude-3.5-haiku
+- **OpenAI 系列**: gpt-5.2-high, codex-5.3-high, composer-1.5, gpt-4o, o3, o4-mini
+- **其他系列**: deepseek-r1, gemini-2.5-pro, gemini-2.5-flash
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- Go 1.21+
-- Node.js 18+ (用于 JavaScript 执行)
+- Go 1.24+
+- Node.js 18+ (用于交互式脚本执行)
 
 ### 安装和运行
 

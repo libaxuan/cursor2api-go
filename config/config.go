@@ -48,11 +48,11 @@ func LoadConfig() (*Config, error) {
 		Port:               getEnvAsInt("PORT", 8002),
 		Debug:              getEnvAsBool("DEBUG", false),
 		APIKey:             getEnv("API_KEY", "0000"),
-		Models:             getEnv("MODELS", "gpt-4o,claude-3.5-sonnet"),
+		Models:             getEnv("MODELS", "gpt-5.2-high,claude-opus-4.6,claude-sonnet-4.5,gpt-codex-5.3-high,composer-1.5,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1"),
 		SystemPromptInject: getEnv("SYSTEM_PROMPT_INJECT", ""),
 		Timeout:            getEnvAsInt("TIMEOUT", 30),
 		MaxInputLength:     getEnvAsInt("MAX_INPUT_LENGTH", 200000),
-		ScriptURL:          getEnv("SCRIPT_URL", "https://cursor.com/_next/static/chunks/pages/_app.js"),
+		ScriptURL:          getEnv("SCRIPT_URL", "https://cursor.com/149e9513-01fa-4fb0-aad4-566afd725d1b/2d206a39-8ed7-437e-a3be-862e0f06eea3/a-4-a/c.js?i=0&v=3&h=cursor.com"),
 		FP: FP{
 			UserAgent:               getEnv("USER_AGENT", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"),
 			UNMASKED_VENDOR_WEBGL:   getEnv("UNMASKED_VENDOR_WEBGL", "Google Inc. (Intel)"),
