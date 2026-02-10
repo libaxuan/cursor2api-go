@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor2API Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --bg: #0b0f1a;
+            --card-bg: rgba(22, 28, 45, 0.6);
+            --sidebar-bg: #0f172a;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --error: #ef4444;
+            --code-bg: #000000;
+            --highlight-keyword: #c678dd;
+            --highlight-string: #98c379;
+            --highlight-function: #61afef;
+            --highlight-comment: #5c6370;
+            --highlight-variable: #e06c75;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 3rem;
+        }
+
+        .logo-box {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .nav-menu {
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.875rem 1rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2.5rem;
+            background: radial-gradient(circle at top right, #1e1b4b, transparent 600px);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .key-btn {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 20px;
+        }
+
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        /* Section Styling */
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Page Layout */
+        .page-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Model List */
+        .model-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .model-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .model-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .model-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .model-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .detail-item {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .detail-value {
+            display: block;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Code Block Enhancement */
+        .code-container {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 1.25rem;
+            position: relative;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Token Colors for Highlighting */
+        .token-keyword {
+            color: var(--highlight-keyword);
+        }
+
+        .token-string {
+            color: var(--highlight-string);
+        }
+
+        .token-comment {
+            color: var(--highlight-comment);
+        }
+
+        .token-func {
+            color: var(--highlight-function);
+        }
+
+        .token-bool {
+            color: #d19a66;
+        }
+
+        .token-num {
+            color: #d19a66;
+        }
+
+        /* Auth */
+        #auth-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-dialog {
+            background: var(--sidebar-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .auth-dialog input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            margin-bottom: 1.5rem;
+            outline: none;
+        }
+
+        .auth-dialog button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding: 1rem 0.5rem;
+            }
+
+            .brand-name,
+            .nav-item span {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="auth-overlay">
+        <div class="auth-dialog">
+            <i class="fas fa-lock" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h3>需要身份验证</h3>
+            <p style="color: var(--text-dim); margin-bottom: 1.5rem;">请输入 API Key 以同步模型列表</p>
+            <input type="password" id="api-key-input" placeholder="默认 0000" value="">
+            <button onclick="saveKey()">确认并保存</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="brand">
+            <div class="logo-box">C2</div>
+            <div class="brand-name">Cursor2API</div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="switchPage('home')">
+                <i class="fas fa-robot"></i> <span>模型列表</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('docs')">
+                <i class="fas fa-book"></i> <span>集成指南</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <div>
+                <h1 id="page-title">系统概览</h1>
+                <p style="color: var(--text-dim); font-size: 0.875rem;">欢迎来到 Cursor2API Dashboard</p>
+            </div>
+            <div class="header-right">
+                <button class="key-btn" onclick="showAuth()"><i class="fas fa-key"></i> 设置 Key</button>
+                <div class="status-badge" id="online-badge"><i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                    服务在线</div>
+            </div>
+        </header>
+
+        <div id="stats-area" class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">可用模型总数</div>
+                <div class="stat-value" id="model-count">...</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">API 兼容性</div>
+                <div class="stat-value">OpenAI V1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">系统状态</div>
+                <div class="stat-value" id="sys-status" style="color: var(--success);">Healthy</div>
+            </div>
+        </div>
+
+        <div id="home-page" class="page-content">
+            <h2 class="section-title"><i class="fas fa-layer-group"></i> 支持的 AI 模型</h2>
+            <div class="model-list" id="model-list"></div>
+        </div>
+
+        <div id="docs-page" class="page-content" style="display:none">
+            <h2 class="section-title"><i class="fas fa-terminal"></i> 快速集成指南</h2>
+
+            <p style="color: var(--text-dim); margin-bottom: 1rem;">将您的应用接口地址 (Base URL) 指向：</p>
+            <div class="code-container">
+                <span class="token-string" id="base-url-text"></span>
+                <button class="copy-btn" onclick="copyText('base-url-text')">复制</button>
+            </div>
+
+            <h3 style="margin-bottom: 1rem;">cURL 调用示例</h3>
+            <div class="code-container">
+                <button class="copy-btn" onclick="copyText('curl-code')">复制</button>
+                <div id="curl-code">
+                    <span class="token-keyword">curl</span> --location <span class="token-string">'<span
+                            id="curl-url-text"></span>/chat/completions'</span> \<br>
+                    --header <span class="token-string">'Authorization: Bearer YOUR_API_KEY'</span> \<br>
+                    --header <span class="token-string">'Content-Type: application/json'</span> \<br>
+                    --data <span class="token-string">'{<br>
+                        &nbsp;&nbsp;"model": "claude-3.5-sonnet",<br>
+                        &nbsp;&nbsp;"messages": [{"role": "user", "content": "你好"}],<br>
+                        &nbsp;&nbsp;"stream": true<br>
+                        }'</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentKey = localStorage.getItem('cursor_api_key') || '0000';
+
+        function switchPage(page) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+
+            const activeItem = Array.from(document.querySelectorAll('.nav-item')).find(i => i.innerText.includes(page === 'home' ? '模型列表' : '集成指南'));
+            if (activeItem) activeItem.classList.add('active');
+
+            document.getElementById(page + '-page').style.display = 'block';
+            document.getElementById('page-title').innerText = page === 'home' ? '系统概览' : '开发者文档';
+
+            // Stats grid only on home
+            if (page === 'home') document.getElementById('stats-area').style.display = 'grid';
+            else document.getElementById('stats-area').style.display = 'none';
+        }
+
+        function showAuth() { document.getElementById('auth-overlay').style.display = 'flex'; }
+
+        function saveKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            if (key) {
+                currentKey = key;
+                localStorage.setItem('cursor_api_key', key);
+                document.getElementById('auth-overlay').style.display = 'none';
+                init();
+            }
+        }
+
+        function copyText(id) {
+            const el = document.getElementById(id);
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = el.parentElement.querySelector('.copy-btn');
+                const original = btn.innerText;
+                btn.innerText = '已复制!';
+                setTimeout(() => btn.innerText = original, 2000);
+            });
+        }
+
+        async function init() {
+            const origin = window.location.origin;
+            document.getElementById('base-url-text').innerText = `${origin}/v1`;
+            document.getElementById('curl-url-text').innerText = `${origin}/v1`;
+
+            try {
+                const response = await fetch('/v1/models', {
+                    headers: { 'Authorization': `Bearer ${currentKey}` }
+                });
+
+                if (response.status === 401) {
+                    document.getElementById('sys-status').innerText = "Unauthorized";
+                    document.getElementById('sys-status').style.color = "var(--error)";
+                    showAuth();
+                    return;
+                }
+
+                const data = await response.json();
+                if (data && data.data) {
+                    document.getElementById('model-count').innerText = data.data.length;
+                    document.getElementById('sys-status').innerText = "Healthy";
+                    document.getElementById('sys-status').style.color = "var(--success)";
+
+                    const list = document.getElementById('model-list');
+                    list.innerHTML = data.data.map(model => {
+                        const ctx = model.context_window;
+                        const ctxStr = ctx >= 1000000 ? (ctx / 1000000).toFixed(0) + 'M' : (ctx / 1000).toFixed(0) + 'k';
+                        const maxTokens = model.max_tokens >= 1000 ? (model.max_tokens / 1000).toFixed(0) + 'k' : model.max_tokens;
+
+                        return `
+                        <div class="model-card">
+                            <div class="model-header">
+                                <span class="model-name">${model.id}</span>
+                                <span style="font-size: 0.65rem; color: var(--text-dim); opacity: 0.5;">CURSOR2API</span>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 1rem;">OpenAI 兼容的高性能语言模型。</p>
+                            <div class="model-details">
+                                <div class="detail-item">上下文 <span class="detail-value">${ctxStr}</span></div>
+                                <div class="detail-item">最大 Token <span class="detail-value">${maxTokens}</span></div>
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                }
+            } catch (err) {
+                console.error('Failed to load models:', err);
+                document.getElementById('sys-status').innerText = "Connection Error";
+                document.getElementById('sys-status').style.color = "var(--error)";
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
