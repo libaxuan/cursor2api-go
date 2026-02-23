@@ -127,6 +127,7 @@ Debug mode displays:
 ### Troubleshooting
 
 Having issues? Check the **[Troubleshooting Guide](TROUBLESHOOTING.md)** for solutions to common problems, including:
+- 🚨 **Known Bug: All requests forced to Claude 3.5 Sonnet** (SCRIPT_URL restriction)
 - 403 Access Denied errors
 - Token fetch failures
 - Connection timeouts

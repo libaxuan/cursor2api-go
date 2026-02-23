@@ -2,6 +2,9 @@
 chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
 
+:: 确保在脚本所在目录执行
+cd /d "%~dp0"
+
 ::  Cursor2API启动脚本
 
 echo.
@@ -13,8 +16,8 @@ echo.
 :: 检查Go是否安装
 go version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Go 未安装，请先安装 Go 1.24 或更高版本
-    echo 💡 安装方法: https://golang.org/dl/
+    echo [ERROR] Go is not installed. Please install Go 1.24+
+    echo [INFO] Install: https://golang.org/dl/
     pause
     exit /b 1
 )
@@ -27,8 +30,8 @@ echo ✅ Go 版本检查通过: !GO_VERSION!
 :: 检查Node.js是否安装
 node --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Node.js 未安装，请先安装 Node.js 18 或更高版本
-    echo 💡 安装方法: https://nodejs.org/
+    echo [ERROR] Node.js is not installed. Please install Node.js 18+
+    echo [INFO] Install: https://nodejs.org/
     pause
     exit /b 1
 )
@@ -39,18 +42,18 @@ echo ✅ Node.js 版本检查通过: !NODE_VERSION!
 
 :: 检查jscode目录
 if not exist jscode\main.js (
-    echo ❌ 缺少 jscode 目录或核心脚本 (main.js)
-    echo 💡 请确保在源码根目录下执行脚本，并检查 jscode 文件夹是否完整
+    echo [ERROR] Missing jscode directory or core script main.js
+    echo [INFO] Please ensure script is run in root and jscode is complete
     pause
     exit /b 1
 )
 if not exist jscode\env.js (
-    echo ❌ 缺少 jscode 目录或核心脚本 (env.js)
-    echo 💡 请确保在源码根目录下执行脚本，并检查 jscode 文件夹是否完整
+    echo [ERROR] Missing jscode directory or core script env.js
+    echo [INFO] Please ensure script is run in root and jscode is complete
     pause
     exit /b 1
 )
-echo ✅ jscode 依赖检查通过
+echo [SUCCESS] jscode dependency check passed!
 
 :: 创建.env文件（如果不存在）
 if not exist .env (

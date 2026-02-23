@@ -102,6 +102,13 @@ export LOG_LEVEL=debug
 2. **源码完整性**: 确保 `jscode/` 目录中包含 `main.js` 和 `env.js`。
 3. **Docker 映射**: 如果使用 Docker，请确保 `Dockerfile` 中有 `COPY jscode ./jscode` 指令。
 
+### 🚨 已知 Bug：所有请求都被降级为 Claude 3.5 Sonnet
+如果你在终端看到警告日志 `Failed to fetch script, skipping human token assignment`，并且发现无论在 API 中请求 `gpt-4o` 还是 `o3`，模型始终自称为 `Claude` (通常是 `Claude-3.5-Sonnet`)：
+
+**原因**: 当 `SCRIPT_URL` 失效或网络受阻时，服务为了防止宕机崩溃，会触发**安全降级**：跳过 Token 验证并发送空的 `x-is-human` 到 Cursor 官方。然而，Cursor 官方对这种**无 Token 的游客空载调用**存在后端的强制限制机制。它虽然放行了代理请求，但会**无视 JSON Payload 里的所有自定义模型名称**，并将该次对话强制重定向到其默认模型 `Claude 3.5 Sonnet`。
+
+**解决方案**: 这是一个官方的限制对抗。代码层面的映射并没有写错。想要真正体验到 `gpt-4o`，你必须在浏览器中重新抓包并提取目前最新、合法、有效的 `SCRIPT_URL` 链接，替换到 `.env` 文件中并重启代理服务。
+
 ### UI 仪表盘不更新
 如果你修改了 `static/index.html` 但访问根路径时没有变化：
 **原因**: Go 后端在启动时会**预加载** `static/docs.html` 到内存中。

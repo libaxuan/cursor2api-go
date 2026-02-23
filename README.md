@@ -127,6 +127,7 @@ DEBUG=true ./cursor2api-go
 ### 故障排除
 
 遇到问题？查看 **[故障排除指南](TROUBLESHOOTING.md)** 了解常见问题的解决方案，包括：
+- 🚨 **已知 Bug：所有请求都被降级为 Claude 3.5 Sonnet** (SCRIPT_URL 限制)
 - 403 Access Denied 错误
 - Token 获取失败
 - 连接超时
