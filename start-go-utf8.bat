@@ -2,6 +2,9 @@
 chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
 
+:: 确保在脚本所在目录执行
+cd /d "%~dp0"
+
 ::  Cursor2API启动脚本
 
 echo.
@@ -13,8 +16,8 @@ echo.
 :: 检查Go是否安装
 go version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Go 未安装，请先安装 Go 1.21 或更高版本
-    echo 💡 安装方法: https://golang.org/dl/
+    echo [ERROR] Go is not installed. Please install Go 1.24+
+    echo [INFO] Install: https://golang.org/dl/
     pause
     exit /b 1
 )
@@ -27,8 +30,8 @@ echo ✅ Go 版本检查通过: !GO_VERSION!
 :: 检查Node.js是否安装
 node --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Node.js 未安装，请先安装 Node.js 18 或更高版本
-    echo 💡 安装方法: https://nodejs.org/
+    echo [ERROR] Node.js is not installed. Please install Node.js 18+
+    echo [INFO] Install: https://nodejs.org/
     pause
     exit /b 1
 )
@@ -36,6 +39,21 @@ if errorlevel 1 (
 :: 显示Node.js版本
 for /f "delims=" %%i in ('node --version') do set NODE_VERSION=%%i
 echo ✅ Node.js 版本检查通过: !NODE_VERSION!
+
+:: 检查jscode目录
+if not exist jscode\main.js (
+    echo [ERROR] Missing jscode directory or core script main.js
+    echo [INFO] Please ensure script is run in root and jscode is complete
+    pause
+    exit /b 1
+)
+if not exist jscode\env.js (
+    echo [ERROR] Missing jscode directory or core script env.js
+    echo [INFO] Please ensure script is run in root and jscode is complete
+    pause
+    exit /b 1
+)
+echo [SUCCESS] jscode dependency check passed!
 
 :: 创建.env文件（如果不存在）
 if not exist .env (
@@ -47,7 +65,7 @@ if not exist .env (
         echo.
         echo # API配置
         echo API_KEY=0000
-        echo MODELS=gpt-5.1,gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,gemini-3.0-pro,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3
+        echo MODELS=gpt-5.2-high,opus-4.6,sonnet-4.5,codex-5.3-high,composer-1.5,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1
         echo SYSTEM_PROMPT_INJECT=
         echo.
         echo # 请求配置

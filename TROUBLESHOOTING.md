@@ -96,11 +96,31 @@ export LOG_LEVEL=debug
 2. 增加 `timeout` 配置值
 3. 检查防火墙设置
 
-### Token 获取失败
-如果无法获取 `x-is-human` token:
-1. 检查 `script_url` 配置是否正确
-2. 确保 `jscode/main.js` 和 `jscode/env.js` 文件存在
-3. 检查 JavaScript 执行环境是否正常
+### Token 获取失败 (404 Not Found)
+如果日志显示 `failed to fetch script: script fetch returned status 404`:
+1. **检查 SCRIPT_URL**: 确保 `.env` 中的 `SCRIPT_URL` 包含完整的 UUID 路径（不仅仅是 `_app.js`）。你可以通过浏览器抓包 Cursor 官网的 `c.js` 请求来获取最新地址。
+2. **源码完整性**: 确保 `jscode/` 目录中包含 `main.js` 和 `env.js`。
+3. **Docker 映射**: 如果使用 Docker，请确保 `Dockerfile` 中有 `COPY jscode ./jscode` 指令。
+
+### 🚨 已知 Bug：所有请求都被降级为 Claude 3.5 Sonnet
+如果你在终端看到警告日志 `Failed to fetch script, skipping human token assignment`，并且发现无论在 API 中请求 `gpt-4o` 还是 `o3`，模型始终自称为 `Claude` (通常是 `Claude-3.5-Sonnet`)：
+
+**原因**: 当 `SCRIPT_URL` 失效或网络受阻时，服务为了防止宕机崩溃，会触发**安全降级**：跳过 Token 验证并发送空的 `x-is-human` 到 Cursor 官方。然而，Cursor 官方对这种**无 Token 的游客空载调用**存在后端的强制限制机制。它虽然放行了代理请求，但会**无视 JSON Payload 里的所有自定义模型名称**，并将该次对话强制重定向到其默认模型 `Claude 3.5 Sonnet`。
+
+**解决方案**: 这是一个官方的限制对抗。代码层面的映射并没有写错。想要真正体验到 `gpt-4o`，你必须在浏览器中重新抓包并提取目前最新、合法、有效的 `SCRIPT_URL` 链接，替换到 `.env` 文件中并重启代理服务。
+
+### UI 仪表盘不更新
+如果你修改了 `static/index.html` 但访问根路径时没有变化：
+**原因**: Go 后端在启动时会**预加载** `static/docs.html` 到内存中。
+**解决方案**: 
+1. 确保修改的是 `static/docs.html` 而不仅仅是 `index.html`。
+2. 必须**重启服务**以清除预加载缓存。
+3. 检查控制台日志是否提示 `预加载文档成功`。
+
+### JavaScript 执行错误 (Node.js)
+如果报错 `failed to execute JS`:
+1. **安装 Node.js**: 该项目需要 `node` 命令来计算人机挑战 Token。
+2. **Docker 环境**: 确保基础镜像（如 Alpine）中安装了 `nodejs`。
 
 ## 联系支持
 

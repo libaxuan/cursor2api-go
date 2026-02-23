@@ -25,13 +25,13 @@ print_header() {
 # 检查Go环境
 check_go() {
     if ! command -v go &> /dev/null; then
-        echo -e "${RED}❌ Go 未安装，请先安装 Go 1.21 或更高版本${NC}"
+        echo -e "${RED}❌ Go 未安装，请先安装 Go 1.24 或更高版本${NC}"
         echo -e "${YELLOW}💡 安装方法: https://golang.org/dl/${NC}"
         exit 1
     fi
 
     GO_VERSION=$(go version | awk '{print $3}' | sed 's/go//')
-    REQUIRED_VERSION="1.21"
+    REQUIRED_VERSION="1.24"
 
     if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$GO_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]; then
         echo -e "${RED}❌ Go 版本 $GO_VERSION 过低，请安装 Go $REQUIRED_VERSION 或更高版本${NC}"
@@ -60,6 +60,16 @@ check_nodejs() {
     echo -e "${GREEN}✅ Node.js 版本检查通过: $NODE_VERSION${NC}"
 }
 
+# 检查依赖目录
+check_jscode() {
+    if [ ! -d "jscode" ] || [ ! -f "jscode/main.js" ] || [ ! -f "jscode/env.js" ]; then
+        echo -e "${RED}❌ 缺少 jscode 目录或核心脚本 (main.js/env.js)${NC}"
+        echo -e "${YELLOW}💡 请确保在源码根目录下执行脚本，并检查 jscode 文件夹是否完整${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✅ jscode 依赖检查通过${NC}"
+}
+
 # 处理环境配置
 setup_env() {
     if [ ! -f .env ]; then
@@ -71,7 +81,7 @@ DEBUG=false
 
 # API配置
 API_KEY=0000
-MODELS=gpt-5.1,gpt-5,gpt-5-codex,gpt-5-mini,gpt-5-nano,gpt-4.1,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,gemini-3.0-pro,o3,o4-mini,deepseek-r1,deepseek-v3.1,kimi-k2-instruct,grok-3
+MODELS=gpt-5.2-high,claude-opus-4.6,claude-sonnet-4.5,gpt-codex-5.3-high,composer-1.5,gpt-4o,claude-3.5-sonnet,claude-3.5-haiku,claude-3.7-sonnet,claude-4-sonnet,claude-4.5-sonnet,claude-4-opus,claude-4.1-opus,gemini-2.5-pro,gemini-2.5-flash,o3,o4-mini,deepseek-r1
 SYSTEM_PROMPT_INJECT=
 
 # 请求配置
@@ -123,6 +133,7 @@ main() {
     print_header
     check_go
     check_nodejs
+    check_jscode
     setup_env
     build_app
     show_info

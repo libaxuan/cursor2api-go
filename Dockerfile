@@ -1,5 +1,5 @@
 # 构建阶段
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app
@@ -22,8 +22,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o cursor2api-go .
 # 运行阶段
 FROM alpine:latest
 
-# 安装ca-certificates
-RUN apk --no-cache add ca-certificates
+# 安装必要依赖 (ca-certificates 用于 HTTPS, nodejs 用于生成认证 Token)
+RUN apk --no-cache add ca-certificates nodejs
 
 # 创建非root用户
 RUN adduser -D -g '' appuser
@@ -33,8 +33,9 @@ WORKDIR /root/
 # 从构建阶段复制二进制文件
 COPY --from=builder /app/cursor2api-go .
 
-# 复制静态文件
+# 复制资源文件
 COPY --from=builder /app/static ./static
+COPY --from=builder /app/jscode ./jscode
 
 # 更改所有者
 RUN chown -R appuser:appuser /root/

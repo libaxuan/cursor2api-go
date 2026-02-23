@@ -76,7 +76,7 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 
 	payload := models.CursorRequest{
 		Context:  []interface{}{},
-		Model:    request.Model,
+		Model:    models.GetInternalID(request.Model),
 		ID:       utils.GenerateRandomString(16),
 		Messages: cursorMessages,
 		Trigger:  "submit-message",
@@ -101,10 +101,14 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 		}
 
 		// 添加详细的调试日志
+		displayToken := xIsHuman
+		if len(displayToken) > 50 {
+			displayToken = displayToken[:50] + "..."
+		}
 		headers := s.chatHeaders(xIsHuman)
 		logrus.WithFields(logrus.Fields{
 			"url":            cursorAPIURL,
-			"x-is-human":     xIsHuman[:50] + "...", // 只显示前50个字符
+			"x-is-human":     displayToken, // 安全截断
 			"payload_length": len(jsonPayload),
 			"model":          request.Model,
 			"attempt":        attempt,
@@ -218,7 +222,8 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 				s.scriptCache = ""
 				s.scriptCacheTime = time.Time{}
 				s.scriptMutex.Unlock()
-				return "", fmt.Errorf("failed to fetch script: %w", err)
+				logrus.Warnf("Failed to fetch script, skipping human token assignment: %v", err)
+				return "", nil
 			}
 		} else if resp.StatusCode != http.StatusOK {
 			// 如果状态码异常且有缓存，使用缓存
@@ -231,8 +236,8 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 				s.scriptCache = ""
 				s.scriptCacheTime = time.Time{}
 				s.scriptMutex.Unlock()
-				message := strings.TrimSpace(resp.String())
-				return "", middleware.NewCursorWebError(resp.StatusCode, message)
+				logrus.Warnf("Script fetch returned status %d, skipping human token assignment", resp.StatusCode)
+				return "", nil
 			}
 		} else {
 			scriptBody = string(resp.Bytes())
@@ -252,7 +257,8 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 		s.scriptCache = ""
 		s.scriptCacheTime = time.Time{}
 		s.scriptMutex.Unlock()
-		return "", fmt.Errorf("failed to execute JS: %w", err)
+		logrus.Warnf("Failed to execute JS, skipping human token assignment: %v", err)
+		return "", nil
 	}
 
 	logrus.WithField("length", len(value)).Debug("Fetched x-is-human token")

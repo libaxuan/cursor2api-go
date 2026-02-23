@@ -4,7 +4,7 @@ English | [简体中文](README.md)
 
 A Go service that converts Cursor Web to OpenAI-compatible API. Fully compatible with OpenAI API format, supports local deployment.
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
@@ -14,21 +14,20 @@ A Go service that converts Cursor Web to OpenAI-compatible API. Fully compatible
 - ✅ Supports 23 advanced AI models
 - ✅ High-performance Go implementation
 - ✅ Automatic Cursor Web authentication
-- ✅ Clean web interface
+- ✅ **New Built-in Dashboard**: Modernized management interface inspired by Antigravity style
 
 ## 🤖 Supported Models (23)
 
-- **OpenAI Series**: gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano, gpt-4.1, gpt-4o, o3, o4-mini
-- **Claude Series**: claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet, claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-- **Gemini Series**: gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro
-- **Other Models**: deepseek-r1, deepseek-v3.1, kimi-k2-instruct, grok-3
+- **Claude Series**: opus-4.6, sonnet-4.5, claude-3.7-sonnet, claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-3.5-sonnet, claude-3.5-haiku
+- **OpenAI Series**: gpt-5.2-high, codex-5.3-high, composer-1.5, gpt-4o, o3, o4-mini
+- **Other Series**: deepseek-r1, gemini-2.5-pro, gemini-2.5-flash
 
 ## 🚀 Quick Start
 
 ### Requirements
 
-- Go 1.21+
-- Node.js 18+ (for JavaScript execution)
+- Go 1.24+
+- Node.js 18+ (for script execution)
 
 ### Installation and Running
 
@@ -128,6 +127,7 @@ Debug mode displays:
 ### Troubleshooting
 
 Having issues? Check the **[Troubleshooting Guide](TROUBLESHOOTING.md)** for solutions to common problems, including:
+- 🚨 **Known Bug: All requests forced to Claude 3.5 Sonnet** (SCRIPT_URL restriction)
 - 403 Access Denied errors
 - Token fetch failures
 - Connection timeouts
