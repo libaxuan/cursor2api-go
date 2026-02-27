@@ -2,28 +2,19 @@
 
 [English](README_EN.md) | 简体中文
 
-一个将 Cursor Web 转换为 OpenAI 兼容 API 的服务。提供 Go 和 Cloudflare Workers 两种实现版本。
+一个将 Cursor Web 转换为 OpenAI 兼容 API 的服务。
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
-[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange.svg)](https://workers.cloudflare.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 📦 版本选择
+## ✨ 特性
 
-本项目提供两个版本，你可以根据需求选择：
-
-| 版本 | 部署方式 | 性能 | 成本 | 适用场景 |
-|------|---------|------|------|---------|
-| **Go 版本** | 本地/服务器 | ⭐⭐⭐⭐⭐ | 服务器费用 | 需要高性能、稳定运行 |
-| **Workers 版本** | Cloudflare | ⭐⭐⭐ | 免费额度充足 | 快速部署、全球加速 |
-
-- 🚀 **Go 版本**: 适合需要高性能和稳定性的场景，可部署在任何支持 Go 的服务器上
-- ☁️ **Workers 版本**: 适合快速部署和全球访问，利用 Cloudflare 的边缘网络，免费额度充足
-
-### 快速导航
-
-- **Go 版本**: 继续阅读本文档
-- **Workers 版本**: 查看 [`cf/README.md`](cf/README.md) 或 [`cf/DEPLOYMENT.md`](cf/DEPLOYMENT.md)
+- 🔄 **API 兼容**: 完全兼容 OpenAI API 格式
+- ⚡ **高性能**: 低延迟响应
+- 🔐 **安全认证**: 支持 API Key 认证
+- 🌐 **多模型支持**: 支持多种 AI 模型
+- 🛡️ **错误处理**: 完善的错误处理机制
+- 📊 **健康检查**: 内置健康检查接口
 
 ## ✨ 功能特性
 
@@ -44,7 +35,9 @@
 - Go 1.24+
 - Node.js 18+ (用于 JavaScript 执行)
 
-### 安装和运行
+### 本地运行方式
+
+#### 方法一：直接运行（推荐用于开发）
 
 **Linux/macOS**:
 ```bash
@@ -63,7 +56,120 @@ start-go.bat
 ./start-go-utf8.bat
 ```
 
+#### 方法二：手动编译运行
+
+```bash
+# 克隆项目
+git clone https://github.com/libaxuan/cursor2api-go.git
+cd cursor2api-go
+
+# 下载依赖
+go mod tidy
+
+# 编译
+go build -o cursor2api-go
+
+# 运行
+./cursor2api-go
+```
+
+#### 方法三：使用 go run
+
+```bash
+git clone https://github.com/libaxuan/cursor2api-go.git
+cd cursor2api-go
+go run main.go
+```
+
 服务将在 `http://localhost:8002` 启动
+
+## 🚀 服务器部署方式
+
+### Docker 部署
+
+1. **构建镜像**:
+```bash
+# 构建镜像
+docker build -t cursor2api-go .
+```
+
+2. **运行容器**:
+```bash
+# 运行容器（推荐）
+docker run -d \
+  --name cursor2api-go \
+  --restart unless-stopped \
+  -p 8002:8002 \
+  -e API_KEY=your-secret-key \
+  -e DEBUG=false \
+  cursor2api-go
+
+# 或者使用默认配置运行
+docker run -d --name cursor2api-go --restart unless-stopped -p 8002:8002 cursor2api-go
+```
+
+### Docker Compose 部署（推荐用于生产环境）
+
+1. **使用 docker-compose.yml**:
+```bash
+# 启动服务
+docker-compose up -d
+
+# 停止服务
+docker-compose down
+
+# 查看日志
+docker-compose logs -f
+```
+
+2. **自定义配置**:
+修改 `docker-compose.yml` 文件中的环境变量以满足您的需求：
+- 修改 `API_KEY` 为安全的密钥
+- 根据需要调整 `MODELS`、`TIMEOUT` 等配置
+- 更改暴露的端口
+
+### 系统服务部署（Linux）
+
+1. **编译并移动二进制文件**:
+```bash
+go build -o cursor2api-go
+sudo mv cursor2api-go /usr/local/bin/
+sudo chmod +x /usr/local/bin/cursor2api-go
+```
+
+2. **创建系统服务文件** `/etc/systemd/system/cursor2api-go.service`:
+```ini
+[Unit]
+Description=Cursor2API Service
+After=network.target
+
+[Service]
+Type=simple
+User=your-user
+WorkingDirectory=/home/your-user/cursor2api-go
+ExecStart=/usr/local/bin/cursor2api-go
+Restart=always
+Environment=API_KEY=your-secret-key
+Environment=PORT=8002
+
+[Install]
+WantedBy=multi-user.target
+```
+
+3. **启动服务**:
+```bash
+# 重载 systemd 配置
+sudo systemctl daemon-reload
+
+# 启用开机自启
+sudo systemctl enable cursor2api-go
+
+# 启动服务
+sudo systemctl start cursor2api-go
+
+# 查看状态
+sudo systemctl status cursor2api-go
+```
 
 ## 📡 API 使用
 
@@ -192,20 +298,7 @@ cursor2api-go/
 ├── start.sh             # Linux/macOS 启动脚本
 ├── start-go.bat         # Windows 启动脚本 (GBK)
 ├── start-go-utf8.bat    # Windows 启动脚本 (UTF-8)
-├── cf/                  # Cloudflare Workers 版本
-│   ├── src/             # 源代码
-│   │   ├── index.ts     # 主入口
-│   │   ├── config.ts    # 配置管理
-│   │   ├── cursor-service.ts  # Cursor API 服务
-│   │   ├── handlers.ts  # 路由处理器
-│   │   ├── middleware.ts # 中间件
-│   │   ├── utils.ts     # 工具函数
-│   │   └── js-executor.ts # JavaScript 执行器
-│   ├── wrangler.toml    # Cloudflare Workers 配置
-│   ├── package.json     # 项目依赖
-│   ├── tsconfig.json    # TypeScript 配置
-│   ├── README.md        # Workers 版本说明
-│   └── DEPLOYMENT.md    # 部署指南
+
 └── README.md            # 项目说明
 ```
 
