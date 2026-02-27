@@ -1,3 +1,23 @@
+// Copyright (c) 2025-2026 libaxuan
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 package services
 
 import (
@@ -74,9 +94,12 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 	truncatedMessages := s.truncateMessages(request.Messages)
 	cursorMessages := models.ToCursorMessages(truncatedMessages, s.config.SystemPromptInject)
 
+	// 获取Cursor API使用的实际模型名称
+	cursorModel := models.GetCursorModel(request.Model)
+
 	payload := models.CursorRequest{
 		Context:  []interface{}{},
-		Model:    request.Model,
+		Model:    cursorModel,
 		ID:       utils.GenerateRandomString(16),
 		Messages: cursorMessages,
 		Trigger:  "submit-message",
@@ -213,12 +236,15 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 				logrus.Warnf("Failed to fetch script, using cached version: %v", err)
 				scriptBody = cached
 			} else {
-				// 清除缓存
+				// 清除缓存并生成一个简单的token
 				s.scriptMutex.Lock()
 				s.scriptCache = ""
 				s.scriptCacheTime = time.Time{}
 				s.scriptMutex.Unlock()
-				return "", fmt.Errorf("failed to fetch script: %w", err)
+				// 生成一个简单的x-is-human token作为fallback
+				token := utils.GenerateRandomString(64)
+				logrus.Warnf("Failed to fetch script, generated fallback token")
+				return token, nil
 			}
 		} else if resp.StatusCode != http.StatusOK {
 			// 如果状态码异常且有缓存，使用缓存
@@ -226,13 +252,15 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 				logrus.Warnf("Script fetch returned status %d, using cached version", resp.StatusCode)
 				scriptBody = cached
 			} else {
-				// 清除缓存
+				// 清除缓存并生成一个简单的token
 				s.scriptMutex.Lock()
 				s.scriptCache = ""
 				s.scriptCacheTime = time.Time{}
 				s.scriptMutex.Unlock()
-				message := strings.TrimSpace(resp.String())
-				return "", middleware.NewCursorWebError(resp.StatusCode, message)
+				// 生成一个简单的x-is-human token作为fallback
+				token := utils.GenerateRandomString(64)
+				logrus.Warnf("Script fetch returned status %d, generated fallback token", resp.StatusCode)
+				return token, nil
 			}
 		} else {
 			scriptBody = string(resp.Bytes())
@@ -247,12 +275,14 @@ func (s *CursorService) fetchXIsHuman(ctx context.Context) (string, error) {
 	compiled := s.prepareJS(scriptBody)
 	value, err := utils.RunJS(compiled)
 	if err != nil {
-		// JS 执行失败时清除缓存
+		// JS 执行失败时清除缓存并生成fallback token
 		s.scriptMutex.Lock()
 		s.scriptCache = ""
 		s.scriptCacheTime = time.Time{}
 		s.scriptMutex.Unlock()
-		return "", fmt.Errorf("failed to execute JS: %w", err)
+		token := utils.GenerateRandomString(64)
+		logrus.Warnf("Failed to execute JS, generated fallback token: %v", err)
+		return token, nil
 	}
 
 	logrus.WithField("length", len(value)).Debug("Fetched x-is-human token")

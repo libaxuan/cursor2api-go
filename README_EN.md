@@ -4,37 +4,33 @@ English | [简体中文](README.md)
 
 A Go service that converts Cursor Web to OpenAI-compatible API. Fully compatible with OpenAI API format, supports local deployment.
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
 
 - ✅ Fully compatible with OpenAI API format
 - ✅ Supports streaming and non-streaming responses
-- ✅ Supports 23 advanced AI models
 - ✅ High-performance Go implementation
 - ✅ Automatic Cursor Web authentication
 - ✅ Clean web interface
 
-## 🤖 Supported Models (23)
+## 🤖 Supported Models
 
-- **OpenAI Series**: gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano, gpt-4.1, gpt-4o, o3, o4-mini
-- **Claude Series**: claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet, claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-- **Gemini Series**: gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro
-- **Other Models**: deepseek-r1, deepseek-v3.1, kimi-k2-instruct, grok-3
+- **Anthropic Claude**: claude-sonnet-4.6
 
 ## 🚀 Quick Start
 
 ### Requirements
 
-- Go 1.21+
+- Go 1.24+
 - Node.js 18+ (for JavaScript execution)
 
 ### Installation and Running
 
 **Linux/macOS**:
 ```bash
-git clone https://github.com/yourusername/cursor2api-go.git
+git clone https://github.com/libaxuan/cursor2api-go.git
 cd cursor2api-go
 chmod +x start.sh
 ./start.sh
@@ -66,7 +62,7 @@ curl -X POST http://localhost:8002/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "claude-4.5-sonnet",
+    "model": "claude-sonnet-4.6",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": false
   }'
@@ -79,7 +75,7 @@ curl -X POST http://localhost:8002/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "claude-4.5-sonnet",
+    "model": "claude-sonnet-4.6",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": true
   }'
@@ -102,8 +98,8 @@ In any app that supports custom OpenAI API (e.g., ChatGPT Next Web, Lobe Chat):
 | `PORT` | `8002` | Server port |
 | `DEBUG` | `false` | Debug mode (shows detailed logs and route info when enabled) |
 | `API_KEY` | `0000` | API authentication key |
-| `MODELS` | See `.env.example` | Supported models (comma-separated) |
-| `TIMEOUT` | `30` | Request timeout (seconds) |
+| `MODELS` | `claude-sonnet-4.6` | Supported models (comma-separated) |
+| `TIMEOUT` | `60` | Request timeout (seconds) |
 
 ### Debug Mode
 
@@ -166,18 +162,32 @@ GOOS=linux GOARCH=amd64 go build -o cursor2api-go-linux
 
 ```
 cursor2api-go/
-├── main.go              # Main entry point
-├── config/              # Configuration management
-├── handlers/            # HTTP handlers
-├── services/            # Business service layer
-├── models/              # Data models
-├── utils/               # Utility functions
-├── middleware/          # Middleware
-├── jscode/              # JavaScript code
-├── static/              # Static files
+├── main.go              # Main entry point (Go version)
+├── config/              # Configuration management (Go version)
+├── handlers/            # HTTP handlers (Go version)
+├── services/            # Business service layer (Go version)
+├── models/              # Data models (Go version)
+├── utils/               # Utility functions (Go version)
+├── middleware/          # Middleware (Go version)
+├── jscode/              # JavaScript code (Go version)
+├── static/              # Static files (Go version)
 ├── start.sh             # Linux/macOS startup script
 ├── start-go.bat         # Windows startup script (GBK)
 ├── start-go-utf8.bat    # Windows startup script (UTF-8)
+├── cf/                  # Cloudflare Workers version
+│   ├── src/             # Source code
+│   │   ├── index.ts     # Main entry
+│   │   ├── config.ts    # Configuration
+│   │   ├── cursor-service.ts  # Cursor API service
+│   │   ├── handlers.ts  # Route handlers
+│   │   ├── middleware.ts # Middleware
+│   │   ├── utils.ts     # Utility functions
+│   │   └── js-executor.ts # JavaScript executor
+│   ├── wrangler.toml    # Cloudflare Workers config
+│   ├── package.json     # Project dependencies
+│   ├── tsconfig.json    # TypeScript config
+│   ├── README.md        # Workers version docs
+│   └── DEPLOYMENT.md    # Deployment guide
 └── README.md            # Project documentation
 ```
 

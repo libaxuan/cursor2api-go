@@ -56,22 +56,25 @@ ERRO[0131] Failed to create chat completion              error="{\"error\":\"Acc
 
 1. **控制请求频率**: 避免在短时间内发送大量请求
 2. **监控日志**: 注意 `x-is-human token` 的获取频率
-3. **合理配置超时**: 在 `config.yaml` 中设置合理的超时时间
+3. **合理配置超时**: 在 `.env` 文件中设置合理的超时时间
 
 ### 配置建议
 
-在 `config.yaml` 中:
-```yaml
-timeout: 120  # 增加超时时间,避免频繁重试
-max_input_length: 100000  # 限制输入长度,减少请求大小
+在 `.env` 文件中:
+```bash
+TIMEOUT=120  # 增加超时时间,避免频繁重试
+MAX_INPUT_LENGTH=100000  # 限制输入长度,减少请求大小
 ```
 
 ### 调试模式
 
-如果需要查看详细的调试信息,可以设置日志级别:
+如果需要查看详细的调试信息,可以启用调试模式:
 ```bash
-export LOG_LEVEL=debug
-./cursor2api-go
+# 方式 1: 修改 .env 文件
+DEBUG=true
+
+# 方式 2: 使用环境变量
+DEBUG=true ./cursor2api-go
 ```
 
 这将显示:
@@ -88,24 +91,24 @@ export LOG_LEVEL=debug
 - User-Agent 不匹配
 - 缺少必要的浏览器指纹
 
-**解决方案**: 检查 `config.yaml` 中的 `fingerprint` 配置是否正确。
+**解决方案**: 检查 `.env` 文件中的浏览器指纹配置（`USER_AGENT`、`UNMASKED_VENDOR_WEBGL`、`UNMASKED_RENDERER_WEBGL`）是否正确。
 
 ### 连接超时
 如果频繁出现连接超时:
 1. 检查网络连接
-2. 增加 `timeout` 配置值
+2. 增加 `.env` 文件中的 `TIMEOUT` 配置值
 3. 检查防火墙设置
 
 ### Token 获取失败
 如果无法获取 `x-is-human` token:
-1. 检查 `script_url` 配置是否正确
+1. 检查 `.env` 文件中的 `SCRIPT_URL` 配置是否正确
 2. 确保 `jscode/main.js` 和 `jscode/env.js` 文件存在
-3. 检查 JavaScript 执行环境是否正常
+3. 检查 Node.js 环境是否正常安装（Node.js 18+）
 
 ## 联系支持
 
 如果问题仍未解决,请提供以下信息:
 1. 完整的错误日志
-2. `config.yaml` 配置(隐藏敏感信息)
-3. 使用的 Go 版本
+2. `.env` 文件配置（隐藏敏感信息如 `API_KEY`）
+3. 使用的 Go 版本和 Node.js 版本
 4. 操作系统信息

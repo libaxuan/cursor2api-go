@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  cursor2api:
+    build: .
+    container_name: cursor2api-go
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      # 服务器配置
+      - PORT=8002
+      - DEBUG=false
+
+      # API 配置（⚠️ 生产环境请修改默认密钥）
+      - API_KEY=0000
+      - MODELS=claude-sonnet-4.6
+      - SYSTEM_PROMPT_INJECT=
+
+      # 请求配置
+      - TIMEOUT=60
+      - MAX_INPUT_LENGTH=200000
+
+      # 浏览器指纹配置
+      - USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36
+      - UNMASKED_VENDOR_WEBGL=Google Inc. (Intel)
+      - UNMASKED_RENDERER_WEBGL=ANGLE (Intel, Intel(R) UHD Graphics 620 Direct3D11 vs_5_0 ps_5_0, D3D11)
+
+      # Cursor 配置
+      - SCRIPT_URL=https://cursor.com/_next/static/chunks/pages/_app.js
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - cursor2api-network
+
+networks:
+  cursor2api-network:
+    driver: bridge

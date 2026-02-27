@@ -2,39 +2,53 @@
 
 [English](README_EN.md) | 简体中文
 
-一个将 Cursor Web 转换为 OpenAI 兼容 API 的 Go 服务。完全兼容 OpenAI API 格式，支持本地运行。
+一个将 Cursor Web 转换为 OpenAI 兼容 API 的服务。提供 Go 和 Cloudflare Workers 两种实现版本。
 
-[![Go Version](https://img.shields.io/badge/Go-1.21+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange.svg)](https://workers.cloudflare.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 📦 版本选择
+
+本项目提供两个版本，你可以根据需求选择：
+
+| 版本 | 部署方式 | 性能 | 成本 | 适用场景 |
+|------|---------|------|------|---------|
+| **Go 版本** | 本地/服务器 | ⭐⭐⭐⭐⭐ | 服务器费用 | 需要高性能、稳定运行 |
+| **Workers 版本** | Cloudflare | ⭐⭐⭐ | 免费额度充足 | 快速部署、全球加速 |
+
+- 🚀 **Go 版本**: 适合需要高性能和稳定性的场景，可部署在任何支持 Go 的服务器上
+- ☁️ **Workers 版本**: 适合快速部署和全球访问，利用 Cloudflare 的边缘网络，免费额度充足
+
+### 快速导航
+
+- **Go 版本**: 继续阅读本文档
+- **Workers 版本**: 查看 [`cf/README.md`](cf/README.md) 或 [`cf/DEPLOYMENT.md`](cf/DEPLOYMENT.md)
 
 ## ✨ 功能特性
 
 - ✅ 完全兼容 OpenAI API 格式
 - ✅ 支持流式和非流式响应
-- ✅ 支持 23 种先进 AI 模型
 - ✅ 高性能 Go 语言实现
 - ✅ 自动处理 Cursor Web 认证
 - ✅ 简洁的 Web 界面
 
-## 🤖 支持的模型 (23个)
+## 🤖 支持的模型
 
-- **OpenAI 系列**: gpt-5.1, gpt-5, gpt-5-codex, gpt-5-mini, gpt-5-nano, gpt-4.1, gpt-4o, o3, o4-mini
-- **Claude 系列**: claude-3.5-sonnet, claude-3.5-haiku, claude-3.7-sonnet, claude-4-sonnet, claude-4.5-sonnet, claude-4-opus, claude-4.1-opus
-- **Gemini 系列**: gemini-2.5-pro, gemini-2.5-flash, gemini-3.0-pro
-- **其他模型**: deepseek-r1, deepseek-v3.1, kimi-k2-instruct, grok-3
+- **Anthropic Claude**: claude-sonnet-4.6
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- Go 1.21+
+- Go 1.24+
 - Node.js 18+ (用于 JavaScript 执行)
 
 ### 安装和运行
 
 **Linux/macOS**:
 ```bash
-git clone https://github.com/yourusername/cursor2api-go.git
+git clone https://github.com/libaxuan/cursor2api-go.git
 cd cursor2api-go
 chmod +x start.sh
 ./start.sh
@@ -66,7 +80,7 @@ curl -X POST http://localhost:8002/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "claude-4.5-sonnet",
+    "model": "claude-sonnet-4.6",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": false
   }'
@@ -79,7 +93,7 @@ curl -X POST http://localhost:8002/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "claude-4.5-sonnet",
+    "model": "claude-sonnet-4.6",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": true
   }'
@@ -102,8 +116,8 @@ curl -X POST http://localhost:8002/v1/chat/completions \
 | `PORT` | `8002` | 服务器端口 |
 | `DEBUG` | `false` | 调试模式（启用后显示详细日志和路由信息） |
 | `API_KEY` | `0000` | API 认证密钥 |
-| `MODELS` | 见 `.env.example` | 支持的模型列表（逗号分隔） |
-| `TIMEOUT` | `30` | 请求超时时间（秒） |
+| `MODELS` | `claude-sonnet-4.6` | 支持的模型列表（逗号分隔） |
+| `TIMEOUT` | `60` | 请求超时时间（秒） |
 
 ### 调试模式
 
@@ -166,18 +180,32 @@ GOOS=linux GOARCH=amd64 go build -o cursor2api-go-linux
 
 ```
 cursor2api-go/
-├── main.go              # 主程序入口
-├── config/              # 配置管理
-├── handlers/            # HTTP 处理器
-├── services/            # 业务服务层
-├── models/              # 数据模型
-├── utils/               # 工具函数
-├── middleware/          # 中间件
-├── jscode/              # JavaScript 代码
-├── static/              # 静态文件
+├── main.go              # 主程序入口 (Go 版本)
+├── config/              # 配置管理 (Go 版本)
+├── handlers/            # HTTP 处理器 (Go 版本)
+├── services/            # 业务服务层 (Go 版本)
+├── models/              # 数据模型 (Go 版本)
+├── utils/               # 工具函数 (Go 版本)
+├── middleware/          # 中间件 (Go 版本)
+├── jscode/              # JavaScript 代码 (Go 版本)
+├── static/              # 静态文件 (Go 版本)
 ├── start.sh             # Linux/macOS 启动脚本
 ├── start-go.bat         # Windows 启动脚本 (GBK)
 ├── start-go-utf8.bat    # Windows 启动脚本 (UTF-8)
+├── cf/                  # Cloudflare Workers 版本
+│   ├── src/             # 源代码
+│   │   ├── index.ts     # 主入口
+│   │   ├── config.ts    # 配置管理
+│   │   ├── cursor-service.ts  # Cursor API 服务
+│   │   ├── handlers.ts  # 路由处理器
+│   │   ├── middleware.ts # 中间件
+│   │   ├── utils.ts     # 工具函数
+│   │   └── js-executor.ts # JavaScript 执行器
+│   ├── wrangler.toml    # Cloudflare Workers 配置
+│   ├── package.json     # 项目依赖
+│   ├── tsconfig.json    # TypeScript 配置
+│   ├── README.md        # Workers 版本说明
+│   └── DEPLOYMENT.md    # 部署指南
 └── README.md            # 项目说明
 ```
 

@@ -1,3 +1,23 @@
+// Copyright (c) 2025-2026 libaxuan
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 package models
 
 // ModelConfig 模型配置结构
@@ -6,163 +26,18 @@ type ModelConfig struct {
 	Provider      string `json:"provider"`
 	MaxTokens     int    `json:"max_tokens"`
 	ContextWindow int    `json:"context_window"`
+	CursorModel   string `json:"cursor_model"` // Cursor API 使用的实际模型名
 }
 
 // GetModelConfigs 获取所有模型配置
 func GetModelConfigs() map[string]ModelConfig {
 	return map[string]ModelConfig{
-		// OpenAI GPT-5 系列
-		"gpt-5": {
-			ID:            "gpt-5",
-			Provider:      "OpenAI",
-			MaxTokens:     4096,
-			ContextWindow: 400000,
-		},
-		"gpt-5-codex": {
-			ID:            "gpt-5-codex",
-			Provider:      "OpenAI Codex",
-			MaxTokens:     4096,
-			ContextWindow: 192000,
-		},
-		"gpt-5-mini": {
-			ID:            "gpt-5-mini",
-			Provider:      "OpenAI GPT-5 Mini",
-			MaxTokens:     4096,
-			ContextWindow: 400000,
-		},
-		"gpt-5-nano": {
-			ID:            "gpt-5-nano",
-			Provider:      "OpenAI GPT-5 Nano",
-			MaxTokens:     4096,
-			ContextWindow: 400000,
-		},
-		"gpt-5.1": {
-			ID:            "gpt-5.1",
-			Provider:      "OpenAI",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-
-		// OpenAI GPT-4 系列
-		"gpt-4.1": {
-			ID:            "gpt-4.1",
-			Provider:      "OpenAI GPT-4.1",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-		"gpt-4o": {
-			ID:            "gpt-4o",
-			Provider:      "OpenAI GPT-4o",
-			MaxTokens:     16384,
-			ContextWindow: 128000,
-		},
-
-		// Anthropic Claude 系列
-		"claude-3.5-sonnet": {
-			ID:            "claude-3.5-sonnet",
-			Provider:      "Anthropic Claude",
+		"claude-sonnet-4.6": {
+			ID:            "claude-sonnet-4.6",
+			Provider:      "Anthropic",
 			MaxTokens:     8192,
 			ContextWindow: 200000,
-		},
-		"claude-3.5-haiku": {
-			ID:            "claude-3.5-haiku",
-			Provider:      "Anthropic Claude",
-			MaxTokens:     4096,
-			ContextWindow: 200000,
-		},
-		"claude-3.7-sonnet": {
-			ID:            "claude-3.7-sonnet",
-			Provider:      "Anthropic Claude",
-			MaxTokens:     8192,
-			ContextWindow: 200000,
-		},
-		"claude-4-sonnet": {
-			ID:            "claude-4-sonnet",
-			Provider:      "Anthropic Claude",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-		"claude-4.5-sonnet": {
-			ID:            "claude-4.5-sonnet",
-			Provider:      "Anthropic Claude",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-		"claude-4-opus": {
-			ID:            "claude-4-opus",
-			Provider:      "Anthropic Claude",
-			MaxTokens:     4096,
-			ContextWindow: 200000,
-		},
-		"claude-4.1-opus": {
-			ID:            "claude-4.1-opus",
-			Provider:      "Anthropic Claude",
-			MaxTokens:     4096,
-			ContextWindow: 200000,
-		},
-
-		// Google Gemini 系列
-		"gemini-2.5-pro": {
-			ID:            "gemini-2.5-pro",
-			Provider:      "Google Gemini",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-		"gemini-2.5-flash": {
-			ID:            "gemini-2.5-flash",
-			Provider:      "Google Gemini",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
-		},
-		"gemini-3.0-pro": {
-			ID:            "gemini-3.0-pro",
-			Provider:      "Google Gemini",
-			MaxTokens:     8192,
-			ContextWindow: 2000000,
-		},
-
-		// OpenAI O-Series (Reasoning Models need high output limits)
-		"o3": {
-			ID:            "o3",
-			Provider:      "OpenAI O-Series",
-			MaxTokens:     65536,
-			ContextWindow: 200000,
-		},
-		"o4-mini": {
-			ID:            "o4-mini",
-			Provider:      "OpenAI O-Series",
-			MaxTokens:     65536,
-			ContextWindow: 200000,
-		},
-
-		// DeepSeek 系列
-		"deepseek-r1": {
-			ID:            "deepseek-r1",
-			Provider:      "DeepSeek",
-			MaxTokens:     8192,
-			ContextWindow: 128000,
-		},
-		"deepseek-v3.1": {
-			ID:            "deepseek-v3.1",
-			Provider:      "DeepSeek",
-			MaxTokens:     4096,
-			ContextWindow: 128000,
-		},
-
-		// Moonshot AI
-		"kimi-k2-instruct": {
-			ID:            "kimi-k2-instruct",
-			Provider:      "Moonshot AI",
-			MaxTokens:     4096,
-			ContextWindow: 256000,
-		},
-
-		// xAI Grok 系列
-		"grok-3": {
-			ID:            "grok-3",
-			Provider:      "xAI Grok",
-			MaxTokens:     8192,
-			ContextWindow: 1000000,
+			CursorModel:   "anthropic/claude-sonnet-4.6",
 		},
 	}
 }
@@ -172,6 +47,17 @@ func GetModelConfig(modelID string) (ModelConfig, bool) {
 	configs := GetModelConfigs()
 	config, exists := configs[modelID]
 	return config, exists
+}
+
+// GetCursorModel 获取Cursor API使用的模型名称
+func GetCursorModel(modelID string) string {
+	if config, exists := GetModelConfig(modelID); exists {
+		if config.CursorModel != "" {
+			return config.CursorModel
+		}
+	}
+	// 如果没有配置映射，返回原始模型名
+	return modelID
 }
 
 // GetMaxTokensForModel 获取指定模型的最大token数

@@ -5,6 +5,7 @@ import (
 	"cursor2api-go/config"
 	"cursor2api-go/handlers"
 	"cursor2api-go/middleware"
+	"cursor2api-go/models"
 	"fmt"
 	"net/http"
 	"os"
@@ -24,7 +25,7 @@ func main() {
 		logrus.Fatalf("Failed to load config: %v", err)
 	}
 
-	// 设置日志级别和 GIN 模式
+	// 设置日志级别和 GIN 模式（必须在创建路由器之前设置）
 	if cfg.Debug {
 		logrus.SetLevel(logrus.DebugLevel)
 		gin.SetMode(gin.DebugMode)
@@ -33,7 +34,10 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	// 创建路由器
+	// 禁用 Gin 的调试信息输出
+	gin.DisableConsoleColor()
+	
+	// 创建路由器（使用 gin.New() 而不是 gin.Default() 以避免默认日志）
 	router := gin.New()
 
 	// 添加中间件
@@ -121,40 +125,26 @@ func printStartupBanner(cfg *config.Config) {
 	fmt.Printf("🚀 服务地址:  http://localhost:%d\n", cfg.Port)
 	fmt.Printf("📚 API 文档:  http://localhost:%d/\n", cfg.Port)
 	fmt.Printf("💊 健康检查:  http://localhost:%d/health\n", cfg.Port)
-	fmt.Printf("🔑 API 密钥:  %s\n", cfg.APIKey)
+	fmt.Printf("🔑 API 密钥:  %s\n", maskAPIKey(cfg.APIKey))
 
-	models := cfg.GetModels()
-	fmt.Printf("\n🤖 支持模型 (%d 个):\n", len(models))
+	modelList := cfg.GetModels()
+	fmt.Printf("\n🤖 支持模型 (%d 个):\n", len(modelList))
 
 	// 按类别分组显示模型
-	openaiModels := []string{}
-	claudeModels := []string{}
-	geminiModels := []string{}
-	otherModels := []string{}
-
-	for _, model := range models {
-		if strings.HasPrefix(model, "gpt-") || strings.HasPrefix(model, "o3") || strings.HasPrefix(model, "o4") {
-			openaiModels = append(openaiModels, model)
-		} else if strings.HasPrefix(model, "claude-") {
-			claudeModels = append(claudeModels, model)
-		} else if strings.HasPrefix(model, "gemini-") {
-			geminiModels = append(geminiModels, model)
+	providers := make(map[string][]string)
+	for _, modelID := range modelList {
+		if config, exists := models.GetModelConfig(modelID); exists {
+			providers[config.Provider] = append(providers[config.Provider], modelID)
 		} else {
-			otherModels = append(otherModels, model)
+			providers["Other"] = append(providers["Other"], modelID)
 		}
 	}
 
-	if len(openaiModels) > 0 {
-		fmt.Printf("   OpenAI:  %s\n", strings.Join(openaiModels, ", "))
-	}
-	if len(claudeModels) > 0 {
-		fmt.Printf("   Claude:  %s\n", strings.Join(claudeModels, ", "))
-	}
-	if len(geminiModels) > 0 {
-		fmt.Printf("   Gemini:  %s\n", strings.Join(geminiModels, ", "))
-	}
-	if len(otherModels) > 0 {
-		fmt.Printf("   其他:    %s\n", strings.Join(otherModels, ", "))
+	// 按Provider排序并显示
+	for _, provider := range []string{"Anthropic", "OpenAI", "Google", "Other"} {
+		if models, ok := providers[provider]; ok && len(models) > 0 {
+			fmt.Printf("   %s:  %s\n", provider, strings.Join(models, ", "))
+		}
 	}
 
 	if cfg.Debug {
@@ -163,4 +153,12 @@ func printStartupBanner(cfg *config.Config) {
 
 	fmt.Println("\n✨ 服务已启动，按 Ctrl+C 停止")
 	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+}
+
+// maskAPIKey 掩码 API 密钥，只显示前 4 位
+func maskAPIKey(key string) string {
+	if len(key) <= 4 {
+		return "****"
+	}
+	return key[:4] + "****"
 }

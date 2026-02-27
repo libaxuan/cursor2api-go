@@ -310,7 +310,7 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "claude-4.5-sonnet",
+    "model": "claude-sonnet-4.6",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": false
   }'</code>
@@ -323,7 +323,7 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "claude-4.5-sonnet",
+    "model": "claude-sonnet-4.6",
     "messages": [{"role": "user", "content": "Hello!"}],
     "stream": true
   }'</code>
@@ -333,101 +333,13 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
 
             <!-- 模型页面 -->
             <div id="models" class="tab-content">
-                <h2>🤖 支持的AI模型 (23个)</h2>
+                <h2>🤖 支持的AI模型</h2>
                 <p>点击模型卡片可查看详细信息和使用示例</p>
 
                 <div class="models-grid" id="modelsGrid">
-                    <div class="model-card" onclick="selectModel('gpt-5')">
-                        <div class="model-name">gpt-5</div>
-                        <div class="provider">OpenAI GPT-5</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gpt-5.1')">
-                        <div class="model-name">gpt-5.1</div>
-                        <div class="provider">OpenAI GPT-5.1</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gpt-5-codex')">
-                        <div class="model-name">gpt-5-codex</div>
-                        <div class="provider">OpenAI Codex</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gpt-5-mini')">
-                        <div class="model-name">gpt-5-mini</div>
-                        <div class="provider">OpenAI GPT-5 Mini</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gpt-5-nano')">
-                        <div class="model-name">gpt-5-nano</div>
-                        <div class="provider">OpenAI GPT-5 Nano</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gpt-4.1')">
-                        <div class="model-name">gpt-4.1</div>
-                        <div class="provider">OpenAI GPT-4.1</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gpt-4o')">
-                        <div class="model-name">gpt-4o</div>
-                        <div class="provider">OpenAI GPT-4o</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-3.5-sonnet')">
-                        <div class="model-name">claude-3.5-sonnet</div>
+                    <div class="model-card" onclick="selectModel('claude-sonnet-4.6')">
+                        <div class="model-name">claude-sonnet-4.6</div>
                         <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-3.5-haiku')">
-                        <div class="model-name">claude-3.5-haiku</div>
-                        <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-3.7-sonnet')">
-                        <div class="model-name">claude-3.7-sonnet</div>
-                        <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-4-sonnet')">
-                        <div class="model-name">claude-4-sonnet</div>
-                        <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-4.5-sonnet')">
-                        <div class="model-name">claude-4.5-sonnet</div>
-                        <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-4-opus')">
-                        <div class="model-name">claude-4-opus</div>
-                        <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('claude-4.1-opus')">
-                        <div class="model-name">claude-4.1-opus</div>
-                        <div class="provider">Anthropic Claude</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gemini-2.5-pro')">
-                        <div class="model-name">gemini-2.5-pro</div>
-                        <div class="provider">Google Gemini</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gemini-2.5-flash')">
-                        <div class="model-name">gemini-2.5-flash</div>
-                        <div class="provider">Google Gemini</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('gemini-3.0-pro')">
-                        <div class="model-name">gemini-3.0-pro</div>
-                        <div class="provider">Google Gemini</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('o3')">
-                        <div class="model-name">o3</div>
-                        <div class="provider">OpenAI O-Series</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('o4-mini')">
-                        <div class="model-name">o4-mini</div>
-                        <div class="provider">OpenAI O-Series</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('deepseek-r1')">
-                        <div class="model-name">deepseek-r1</div>
-                        <div class="provider">DeepSeek</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('deepseek-v3.1')">
-                        <div class="model-name">deepseek-v3.1</div>
-                        <div class="provider">DeepSeek</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('kimi-k2-instruct')">
-                        <div class="model-name">kimi-k2-instruct</div>
-                        <div class="provider">Moonshot AI</div>
-                    </div>
-                    <div class="model-card" onclick="selectModel('grok-3')">
-                        <div class="model-name">grok-3</div>
-                        <div class="provider">xAI Grok</div>
                     </div>
                 </div>
 
@@ -464,7 +376,7 @@ curl -H "Authorization: Bearer 0000" http://localhost:8002/v1/models</code>
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer 0000" \
   -d '{
-    "model": "gpt-4o",
+    "model": "claude-sonnet-4.6",
     "messages": [
       {"role": "user", "content": "你好"}
     ],
