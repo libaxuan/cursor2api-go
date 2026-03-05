@@ -22,6 +22,23 @@ if errorlevel 1 (
 :: 显示Go版本并检查版本号
 for /f "tokens=3" %%i in ('go version') do set GO_VERSION=%%i
 set GO_VERSION=!GO_VERSION:go=!
+
+:: 检查Go版本是否满足要求 (需要 >= 1.21)
+for /f "tokens=1,2 delims=." %%a in ("!GO_VERSION!") do (
+    set MAJOR=%%a
+    set MINOR=%%b
+)
+if !MAJOR! LSS 1 (
+    echo ❌ Go 版本 !GO_VERSION! 过低，请安装 Go 1.21 或更高版本
+    pause
+    exit /b 1
+)
+if !MAJOR! EQU 1 if !MINOR! LSS 21 (
+    echo ❌ Go 版本 !GO_VERSION! 过低，请安装 Go 1.21 或更高版本
+    pause
+    exit /b 1
+)
+
 echo ✅ Go 版本检查通过: !GO_VERSION!
 
 :: 检查Node.js是否安装
@@ -33,8 +50,18 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: 显示Node.js版本
+:: 显示Node.js版本并检查版本号
 for /f "delims=" %%i in ('node --version') do set NODE_VERSION=%%i
+set NODE_VERSION=!NODE_VERSION:v=!
+
+:: 检查Node.js版本是否满足要求 (需要 >= 18)
+for /f "tokens=1 delims=." %%a in ("!NODE_VERSION!") do set NODE_MAJOR=%%a
+if !NODE_MAJOR! LSS 18 (
+    echo ❌ Node.js 版本 !NODE_VERSION! 过低，请安装 Node.js 18 或更高版本
+    pause
+    exit /b 1
+)
+
 echo ✅ Node.js 版本检查通过: !NODE_VERSION!
 
 :: 创建.env文件（如果不存在）
@@ -89,16 +116,6 @@ if not exist cursor2api-go.exe (
 )
 
 echo ✅ 应用编译成功！
-
-:: 获取端口配置
-set PORT=8002
-for /f "tokens=2 delims==" %%i in ('findstr /r "^PORT" .env 2^>nul') do set PORT=%%i
-set PORT=!PORT: =!
-
-:: 获取API密钥
-set API_KEY=0000
-for /f "tokens=2 delims==" %%i in ('findstr /r "^API_KEY" .env 2^>nul') do set API_KEY=%%i
-set API_KEY=!API_KEY: =!
 
 :: 显示服务信息
 echo.
