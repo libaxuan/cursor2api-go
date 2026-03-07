@@ -2,18 +2,19 @@
 
 English | [简体中文](README.md)
 
-A Go service that converts Cursor Web to OpenAI-compatible API. Fully compatible with OpenAI API format, supports local deployment.
+A Go service that converts Cursor Web to a basic OpenAI chat completions compatible API, suitable for local deployment.
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial-orange.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 ## ✨ Features
 
-- ✅ Fully compatible with OpenAI API format
+- ✅ Compatible with the basic OpenAI chat completions format
 - ✅ Supports streaming and non-streaming responses
 - ✅ High-performance Go implementation
 - ✅ Automatic Cursor Web authentication
 - ✅ Clean web interface
+- ❌ Does not support tools / function calling / MCP
 
 ## 🤖 Supported Models
 
@@ -312,11 +313,12 @@ Contributions are welcome! Please follow these steps:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/).
+Commercial use is not permitted. See the [LICENSE](LICENSE) file for details.
 
 ## ⚠️ Disclaimer
 
-This project is for learning and research purposes only. Do not use for commercial purposes. Please comply with the terms of service of related services when using this project.
+Please comply with the terms of service of related services when using this project.
 
 ---
 

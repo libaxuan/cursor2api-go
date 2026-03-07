@@ -91,19 +91,7 @@ func NewCursorService(cfg *config.Config) *CursorService {
 
 // ChatCompletion creates a chat completion stream for the given request.
 func (s *CursorService) ChatCompletion(ctx context.Context, request *models.ChatCompletionRequest) (<-chan interface{}, error) {
-	truncatedMessages := s.truncateMessages(request.Messages)
-	cursorMessages := models.ToCursorMessages(truncatedMessages, s.config.SystemPromptInject)
-
-	// 获取Cursor API使用的实际模型名称
-	cursorModel := models.GetCursorModel(request.Model)
-
-	payload := models.CursorRequest{
-		Context:  []interface{}{},
-		Model:    cursorModel,
-		ID:       utils.GenerateRandomString(16),
-		Messages: cursorMessages,
-		Trigger:  "submit-message",
-	}
+	payload := s.buildCursorRequest(request)
 
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
@@ -195,6 +183,21 @@ func (s *CursorService) ChatCompletion(ctx context.Context, request *models.Chat
 	}
 
 	return nil, fmt.Errorf("failed after %d attempts", maxRetries)
+}
+
+func (s *CursorService) buildCursorRequest(request *models.ChatCompletionRequest) models.CursorRequest {
+	truncatedMessages := s.truncateMessages(request.Messages)
+	cursorMessages := models.ToCursorMessages(truncatedMessages, s.config.SystemPromptInject)
+
+	payload := models.CursorRequest{
+		Context:  []interface{}{},
+		Model:    models.GetCursorModel(request.Model),
+		ID:       utils.GenerateRandomString(16),
+		Messages: cursorMessages,
+		Trigger:  "submit-message",
+	}
+
+	return payload
 }
 
 func (s *CursorService) consumeSSE(ctx context.Context, resp *http.Response, output chan interface{}) {

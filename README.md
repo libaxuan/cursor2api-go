@@ -2,14 +2,14 @@
 
 [English](README_EN.md) | 简体中文
 
-一个将 Cursor Web 转换为 OpenAI 兼容 API 的服务。
+一个将 Cursor Web 转换为基础 OpenAI chat completions 兼容 API 的服务。
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial-orange.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
 
 ## ✨ 特性
 
-- 🔄 **API 兼容**: 完全兼容 OpenAI API 格式
+- 🔄 **API 兼容**: 兼容基础 OpenAI chat completions 接口
 - ⚡ **高性能**: 低延迟响应
 - 🔐 **安全认证**: 支持 API Key 认证
 - 🌐 **多模型支持**: 支持多种 AI 模型
@@ -18,11 +18,12 @@
 
 ## ✨ 功能特性
 
-- ✅ 完全兼容 OpenAI API 格式
+- ✅ 兼容基础 OpenAI chat completions 格式
 - ✅ 支持流式和非流式响应
 - ✅ 高性能 Go 语言实现
 - ✅ 自动处理 Cursor Web 认证
 - ✅ 简洁的 Web 界面
+- ❌ 不支持 tools / function calling / MCP
 
 ## 🤖 支持的模型
 
@@ -321,11 +322,12 @@ cursor2api-go/
 
 ## 📄 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/) 许可证。
+禁止商业用途。查看 [LICENSE](LICENSE) 文件了解详情。
 
 ## ⚠️ 免责声明
 
-本项目仅供学习和研究使用，请勿用于商业用途。使用本项目时请遵守相关服务的使用条款。
+使用本项目时请遵守相关服务的使用条款。
 
 ---
 

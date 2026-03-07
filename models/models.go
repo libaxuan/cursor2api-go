@@ -39,23 +39,8 @@ type ChatCompletionRequest struct {
 
 // Message 消息结构
 type Message struct {
-	Role         string        `json:"role" binding:"required"`
-	Content      interface{}   `json:"content" binding:"required"`
-	ToolCallID   *string       `json:"tool_call_id,omitempty"`
-	ToolCalls    []ToolCall    `json:"tool_calls,omitempty"`
-}
-
-// ToolCall 工具调用结构
-type ToolCall struct {
-	ID       string   `json:"id"`
-	Type     string   `json:"type"`
-	Function Function `json:"function"`
-}
-
-// Function 函数调用结构
-type Function struct {
-	Name      string `json:"name"`
-	Arguments string `json:"arguments"`
+	Role    string      `json:"role" binding:"required"`
+	Content interface{} `json:"content" binding:"required"`
 }
 
 // ContentPart 消息内容部分（用于多模态内容）
@@ -93,9 +78,9 @@ type Choice struct {
 
 // StreamChoice 流式选择结构
 type StreamChoice struct {
-	Index        int            `json:"index"`
-	Delta        StreamDelta    `json:"delta"`
-	FinishReason *string        `json:"finish_reason"`
+	Index        int         `json:"index"`
+	Delta        StreamDelta `json:"delta"`
+	FinishReason *string     `json:"finish_reason"`
 }
 
 // StreamDelta 流式增量数据
@@ -141,8 +126,8 @@ type ErrorDetail struct {
 
 // CursorMessage Cursor消息格式
 type CursorMessage struct {
-	Role  string        `json:"role"`
-	Parts []CursorPart  `json:"parts"`
+	Role  string       `json:"role"`
+	Parts []CursorPart `json:"parts"`
 }
 
 // CursorPart Cursor消息部分

@@ -35,7 +35,7 @@ func GetModelConfigs() map[string]ModelConfig {
 		"claude-sonnet-4.6": {
 			ID:            "claude-sonnet-4.6",
 			Provider:      "Anthropic",
-			MaxTokens:     8192,
+			MaxTokens:     200000,
 			ContextWindow: 200000,
 			CursorModel:   "anthropic/claude-sonnet-4.6",
 		},
