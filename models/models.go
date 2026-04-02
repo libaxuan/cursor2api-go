@@ -41,11 +41,12 @@ type ChatCompletionRequest struct {
 
 // Message 消息结构
 type Message struct {
-	Role       string      `json:"role" binding:"required"`
-	Content    interface{} `json:"content"`
-	ToolCalls  []ToolCall  `json:"tool_calls,omitempty"`
-	ToolCallID string      `json:"tool_call_id,omitempty"`
-	Name       string      `json:"name,omitempty"`
+	Role             string      `json:"role" binding:"required"`
+	Content          interface{} `json:"content"`
+	ReasoningContent string      `json:"reasoning_content,omitempty"`
+	ToolCalls        []ToolCall  `json:"tool_calls,omitempty"`
+	ToolCallID       string      `json:"tool_call_id,omitempty"`
+	Name             string      `json:"name,omitempty"`
 }
 
 // ContentPart 消息内容部分（用于多模态内容）
@@ -127,9 +128,10 @@ type StreamChoice struct {
 
 // StreamDelta 流式增量数据
 type StreamDelta struct {
-	Role      string          `json:"role,omitempty"`
-	Content   string          `json:"content,omitempty"`
-	ToolCalls []ToolCallDelta `json:"tool_calls,omitempty"`
+	Role             string          `json:"role,omitempty"`
+	Content          string          `json:"content,omitempty"`
+	ReasoningContent string          `json:"reasoning_content,omitempty"`
+	ToolCalls        []ToolCallDelta `json:"tool_calls,omitempty"`
 }
 
 // ToolCallDelta 流式工具调用增量
