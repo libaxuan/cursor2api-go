@@ -43,12 +43,13 @@ RUN chown -R appuser:appuser /root/
 # 切换到非root用户
 USER appuser
 
-# 暴露端口
+# 暴露端口（Render 会通过 PORT 环境变量指定）
 EXPOSE 8002
+EXPOSE 10000
 
-# 健康检查
+# 健康检查（使用环境变量 PORT）
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:8002/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
+    CMD node -e "const port = process.env.PORT || 8002; require('http').get('http://localhost:' + port + '/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
 
 # 启动应用
 CMD ["./cursor2api-go"]
