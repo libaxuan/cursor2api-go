@@ -6,6 +6,7 @@ A Go service that converts Cursor Web into an OpenAI `chat/completions` compatib
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
 [![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial-orange.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
+[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/cursor2api-go)
 
 ## ✨ Features
 
@@ -87,6 +88,21 @@ go run main.go
 The service will start at `http://localhost:8002`
 
 ## 🚀 Server Deployment Methods
+
+### Zeabur One-Click Deploy (Recommended)
+
+Click the button below to deploy to Zeabur with one click:
+
+[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/cursor2api-go)
+
+Or use the Zeabur CLI:
+```bash
+npx zeabur@latest template deploy -f zeabur-template.yaml
+```
+
+For detailed deployment guide, see [Zeabur Deployment Guide](docs/zeabur-deploy.md).
+
+---
 
 ### Docker Deployment
 

@@ -1,0 +1,90 @@
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+  name: Cursor2API-Go
+spec:
+  description: A Go service that converts Cursor Web into OpenAI chat/completions compatible API
+  icon: https://raw.githubusercontent.com/libaxuan/cursor2api-go/main/docs/images/home.png
+  tags:
+    - Tool
+    - AI
+  variables:
+    - key: PUBLIC_DOMAIN
+      type: DOMAIN
+      name: Domain
+      description: What domain do you want for your Cursor2API service?
+    - key: API_KEY
+      type: STRING
+      name: API Key
+      description: API authentication key for the service (default is 0000)
+    - key: MODELS
+      type: STRING
+      name: Models
+      description: "Comma-separated base model list (default: claude-sonnet-4.6)"
+  readme: |-
+    # Cursor2API-Go
+
+    A Go service that converts Cursor Web into an OpenAI `chat/completions` compatible API.
+
+    ## Features
+    - 🔄 **API Compatible**: OpenAI `chat/completions` interface compatible
+    - ⚡ **High Performance**: Low latency response
+    - 🔐 **Secure Auth**: API Key authentication support
+    - 🌐 **Model Derivation**: Automatically exposes `*-thinking` models
+    - 🧰 **Tool Calls**: Supports `tools` / `tool_choice` / `tool_calls`
+    - 🛡️ **Error Handling**: Comprehensive error handling
+    - 📊 **Health Check**: Built-in health check endpoint
+
+    ## Configuration
+    Set environment variables after deployment:
+    - `API_KEY`: API authentication key (default: 0000)
+    - `MODELS`: Base model list, comma-separated (default: claude-sonnet-4.6)
+    - `DEBUG`: Enable debug mode (default: false)
+    - `TIMEOUT`: Request timeout in seconds (default: 60)
+  services:
+    - name: cursor2api-go
+      template: GIT
+      domainKey: PUBLIC_DOMAIN
+      spec:
+        source:
+          source: GITHUB
+          repo: 1066838979
+          branch: main
+        ports:
+          - id: web
+            port: 8002
+            type: HTTP
+        env:
+          PORT:
+            default: "8002"
+          API_KEY:
+            default: ${API_KEY}
+          MODELS:
+            default: ${MODELS}
+          DEBUG:
+            default: "false"
+          TIMEOUT:
+            default: "60"
+  localization:
+    zh-CN:
+      description: 一个将 Cursor Web 转换为 OpenAI chat/completions 兼容 API 的 Go 服务
+      readme: |-
+        # Cursor2API-Go
+
+        一个将 Cursor Web 转换为 OpenAI `chat/completions` 兼容 API 的 Go 服务。
+
+        ## 特性
+        - 🔄 **API 兼容**: 兼容 OpenAI `chat/completions` 接口
+        - ⚡ **高性能**: 低延迟响应
+        - 🔐 **安全认证**: 支持 API Key 认证
+        - 🌐 **模型派生**: 自动暴露 `*-thinking` 模型
+        - 🧰 **工具调用**: 支持 `tools` / `tool_choice` / `tool_calls`
+        - 🛡️ **错误处理**: 完善的错误处理机制
+        - 📊 **健康检查**: 内置健康检查接口
+
+        ## 配置说明
+        部署后可设置以下环境变量：
+        - `API_KEY`: API 认证密钥（默认: 0000）
+        - `MODELS`: 基础模型列表，逗号分隔（默认: claude-sonnet-4.6）
+        - `DEBUG`: 启用调试模式（默认: false）
+        - `TIMEOUT`: 请求超时时间，单位秒（默认: 60）

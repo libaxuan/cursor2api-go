@@ -6,6 +6,7 @@
 
 [![Go Version](https://img.shields.io/badge/Go-1.24+-blue.svg)](https://golang.org)
 [![License: PolyForm Noncommercial](https://img.shields.io/badge/License-PolyForm%20Noncommercial-orange.svg)](https://polyformproject.org/licenses/noncommercial/1.0.0/)
+[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/FOFRHZ)
 
 ## ✨ 特性
 
@@ -84,6 +85,21 @@ go run main.go
 服务将在 `http://localhost:8002` 启动
 
 ## 🚀 服务器部署方式
+
+### Zeabur 一键部署（推荐）
+
+点击下方按钮即可一键部署到 Zeabur：
+
+[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/cursor2api-go)
+
+或者使用 Zeabur CLI 部署：
+```bash
+npx zeabur@latest template deploy -f zeabur-template.yaml
+```
+
+详细部署指南请参考 [Zeabur 部署文档](docs/zeabur-deploy.md)。
+
+---
 
 ### Docker 部署
 
